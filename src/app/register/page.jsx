@@ -38,7 +38,7 @@ export default function RegisterPage() {
     }
 
     toast.success("Account created successfully!");
-    router.push("/");
+    router.push("/login");
   };
 
   return (
