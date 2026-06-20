@@ -147,7 +147,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="relative w-full max-w-sm shrink-0"
         >
-          <div className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center">
+          <div className="absolute -right-2 -top-2 z-10 flex h-6 w-6 items-center justify-center mt-10">
             <motion.span
               className="absolute h-3 w-3 rounded-full bg-[#FF5B3C]"
               animate={{ scale: [1, 1.8], opacity: [0.6, 0] }}
@@ -173,8 +173,8 @@ export default function Hero() {
   border
   border-[#FF5B3C]/15
 
-  object-cover
-
+  object-cover mt-10
+  
   shadow-[0_0_90px_-10px_rgba(255,91,60,.35)]
 
   hover:scale-[1.02]

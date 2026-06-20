@@ -1,59 +1,51 @@
-/**
- * Home Page — IronPulse
- *
- * Public route, server component (no "use client" needed here — the
- * animated Hero is its own client component, imported below).
- *
- * The mock arrays below (FEATURED_CLASSES, LATEST_POSTS) stand in for real
- * data. Replace them with actual fetches once your API routes exist, e.g.:
- *   const classes = await fetch("/api/classes?sort=bookingCount&limit=3").then(r => r.json());
- *   const posts = await fetch("/api/forum?sort=recent&limit=3").then(r => r.json());
- */
 
 import Link from "next/link";
-import Hero from "@/components/Hero"; // adjust the path to wherever you place it
+import Hero from "@/components/Hero"; 
 import StatsPage from "@/components/Stats";
+import FeaturedClasses from "@/components/FeaturedClasses";
+import { FormStateSubscribe } from "react-hook-form";
+import LatestForumPosts from "@/components/LatestForumPosts";
 
-const FEATURED_CLASSES = [
-  {
-    id: "power-yoga-flow",
-    name: "Power Yoga Flow",
-    trainer: "Aisha Khan",
-    category: "Yoga",
-    price: 25,
-    duration: "60 min",
-    bookingCount: 184,
-    image: "https://loremflickr.com/480/300/yoga",
-  },
-  {
-    id: "strength-foundations",
-    name: "Strength Foundations",
-    trainer: "Marcus Reed",
-    category: "Weights",
-    price: 30,
-    duration: "45 min",
-    bookingCount: 152,
-    image: "https://loremflickr.com/480/300/weightlifting,gym",
-  },
-  {
-    id: "hiit-ignite",
-    name: "HIIT Ignite",
-    trainer: "Priya Sharma",
-    category: "Cardio",
-    price: 20,
-    duration: "30 min",
-    bookingCount: 211,
-    image: "https://loremflickr.com/480/300/cardio,running",
-  },
-];
+// const FEATURED_CLASSES = [
+//   {
+//     id: "power-yoga-flow",
+//     name: "Power Yoga Flow",
+//     trainer: "Aisha Khan",
+//     category: "Yoga",
+//     price: 25,
+//     duration: "60 min",
+//     bookingCount: 184,
+//     image: "https://loremflickr.com/480/300/yoga",
+//   },
+//   {
+//     id: "strength-foundations",
+//     name: "Strength Foundations",
+//     trainer: "Marcus Reed",
+//     category: "Weights",
+//     price: 30,
+//     duration: "45 min",
+//     bookingCount: 152,
+//     image: "https://loremflickr.com/480/300/weightlifting,gym",
+//   },
+//   {
+//     id: "hiit-ignite",
+//     name: "HIIT Ignite",
+//     trainer: "Priya Sharma",
+//     category: "Cardio",
+//     price: 20,
+//     duration: "30 min",
+//     bookingCount: 211,
+//     image: "https://loremflickr.com/480/300/cardio,running",
+//   },
+// ];
 
 
 
-const HOW_IT_WORKS = [
-  { step: "01", title: "Browse classes", description: "Filter by category and find a class that fits your schedule." },
-  { step: "02", title: "Book and pay", description: "Secure checkout with Stripe, confirmed instantly." },
-  { step: "03", title: "Show up and train", description: "Your trainer already has your spot ready." },
-];
+// const HOW_IT_WORKS = [
+//   { step: "01", title: "Browse classes", description: "Filter by category and find a class that fits your schedule." },
+//   { step: "02", title: "Book and pay", description: "Secure checkout with Stripe, confirmed instantly." },
+//   { step: "03", title: "Show up and train", description: "Your trainer already has your spot ready." },
+// ];
 
 // const STATS = [
 //   { value: "1,200+", label: "Members" },
@@ -171,7 +163,8 @@ export default function HomePage() {
   return (
     <main>
       <Hero />
-      
+      <FeaturedClasses/>
+       <LatestForumPosts/>
       
      
     </main>
