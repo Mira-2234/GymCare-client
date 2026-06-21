@@ -8,11 +8,20 @@ import { Label } from "@heroui/react";
 import { FcGoogle } from "react-icons/fc";
 import { useForm, useWatch } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
+
 import toast from "react-hot-toast";
+import { uploadToImgbb } from "@/lib/imagebb";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+
+  // ছবি upload-এর জন্য আলাদা state — react-hook-form দিয়ে file input
+  // handle করা ঝামেলাযুক্ত, তাই এটা আলাদাভাবে track করছি
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -22,12 +31,47 @@ export default function RegisterPage() {
 
   const passwordValue = useWatch({ control, name: "password" });
 
+  // ── ছবি select করলে ─────────────────────────────────────────────────────
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image must be under 2MB.");
+      return;
+    }
+
+    setImageFile(file);
+    // createObjectURL দিয়ে browser-এ সাথে সাথে preview দেখানো যায়,
+    // Imgbb-তে upload না হওয়া পর্যন্ত অপেক্ষা করতে হয় না
+    setImagePreview(URL.createObjectURL(file));
+  };
+
   const onSubmit = async (data) => {
+    // ── Step 1: ছবি থাকলে আগে Imgbb-তে upload করে URL নাও ──────────────────
+    let imageUrl = null;
+    if (imageFile) {
+      setUploadingImage(true);
+      try {
+        imageUrl = await uploadToImgbb(imageFile);
+      } catch (err) {
+        toast.error(err.message || "Image upload failed. Try again.");
+        setUploadingImage(false);
+        return;
+      }
+      setUploadingImage(false);
+    }
+
+    // ── Step 2: Better Auth-এ account তৈরি করো, imageUrl (বা null) সহ ──────
     const { data: signUpData, error: signUpError } = await authClient.signUp.email({
       email: data.email,
       password: data.password,
       name: data.name,
-      image: data.image,
+      image: imageUrl ?? undefined,
       role: "user",
     });
 
@@ -106,16 +150,42 @@ export default function RegisterPage() {
                 {errors.email && <p className="text-red-500 text-xs px-1">{errors.email.message}</p>}
               </div>
 
-              {/* IMAGE URL */}
+              {/* PROFILE IMAGE — full dropzone style upload */}
               <div className="flex flex-col gap-1.5 w-full">
                 <Label className="text-xs font-semibold text-gray-400 px-1">Profile Image</Label>
-                <input
-                  {...register("image", { required: "Image URL is required" })}
-                  type="text"
-                  placeholder="https://example.com/avatar.jpg"
-                  className="w-full rounded-xl border border-white/10 bg-[#14151A] px-5 py-3 text-white outline-none focus:border-[#FF5B3C]"
-                />
-                {errors.image && <p className="text-red-500 text-xs px-1">{errors.image.message}</p>}
+
+                <label
+                  htmlFor="profile-image-upload"
+                  className="flex cursor-pointer items-center gap-4 rounded-2xl border border-dashed border-[#FF5B3C]/30 bg-[#FF5B3C]/[0.03] p-4 transition-colors hover:border-[#FF5B3C]/60 hover:bg-[#FF5B3C]/[0.06]"
+                >
+                  {/* Icon circle — শুধু preview থাকলে actual photo দেখায় */}
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#14151A]">
+                    {imagePreview ? (
+                      <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF5B3C" strokeWidth="1.8" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                      </svg>
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-medium text-[#F5F3EF]">
+                      {imagePreview ? "Change profile photo" : "Click to upload a profile photo"}
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-gray-500">JPG, PNG · max 2MB</p>
+                  </div>
+
+                  <input
+                    id="profile-image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
               </div>
 
               {/* PASSWORD */}
@@ -165,7 +235,7 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadingImage}
                 className="
                   w-full
                   rounded-xl
@@ -179,7 +249,11 @@ export default function RegisterPage() {
                   disabled:cursor-not-allowed
                 "
               >
-                {isSubmitting ? "Creating account..." : "Create Account"}
+                {uploadingImage
+                  ? "Uploading photo..."
+                  : isSubmitting
+                  ? "Creating account..."
+                  : "Create Account"}
               </button>
             </form>
 

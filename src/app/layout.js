@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "IronPulse",
+  title: "GymCare",
   description: "Fitness & Gym Management Platform",
 };
 
