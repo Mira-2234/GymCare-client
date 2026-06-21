@@ -10,10 +10,13 @@ const ROLE_STYLES = {
   user: "bg-emerald-500/15 text-emerald-400",
 };
 
+const ROLE_OPTIONS = ["user", "trainer", "admin"];
+
 export default function ManageUsersPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState(null);
 
   const fetchUsers = () => {
     if (!user?.email) return;
@@ -30,22 +33,30 @@ export default function ManageUsersPage() {
     fetchUsers();
   }, [user]);
 
-  const changeRole = async (id, role) => {
+  const changeRole = async (id, newRole, currentRole) => {
+    if (newRole === currentRole) return;
+
+    setUpdatingId(id);
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${id}/role?email=${user.email}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ role }),
+          body: JSON.stringify({ role: newRole }),
         }
       );
 
       if (!res.ok) throw new Error();
-      toast.success(`Role updated to ${role}.`);
-      fetchUsers();
+
+      setUsers((prev) =>
+        prev.map((u) => (u._id === id ? { ...u, role: newRole } : u))
+      );
+      toast.success(`Role updated to ${newRole}.`);
     } catch {
       toast.error("Failed to update role.");
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -63,8 +74,10 @@ export default function ManageUsersPage() {
       );
 
       if (!res.ok) throw new Error();
+      setUsers((prev) =>
+        prev.map((u) => (u._id === id ? { ...u, status: newStatus } : u))
+      );
       toast.success(`User ${newStatus.toLowerCase()}.`);
-      fetchUsers();
     } catch {
       toast.error("Failed to update status.");
     }
@@ -101,6 +114,8 @@ export default function ManageUsersPage() {
             ) : (
               users.map((u) => {
                 const status = u.status || "Active";
+                const currentRole = u.role || "user";
+
                 return (
                   <tr key={u._id} className="border-t border-white/10 bg-[#14151A]">
                     <td className="px-5 py-4">
@@ -116,15 +131,35 @@ export default function ManageUsersPage() {
                         </div>
                       </div>
                     </td>
+
                     <td className="px-5 py-4">
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
-                          ROLE_STYLES[u.role] || ROLE_STYLES.user
-                        }`}
-                      >
-                        {u.role || "user"}
-                      </span>
+                      <div className="relative inline-block">
+                        <select
+                          value={currentRole}
+                          disabled={updatingId === u._id}
+                          onChange={(e) => changeRole(u._id, e.target.value, currentRole)}
+                          className={`cursor-pointer appearance-none rounded-full border-0 px-3 py-1 pr-7 text-xs font-medium capitalize outline-none disabled:opacity-50 ${
+                            ROLE_STYLES[currentRole] || ROLE_STYLES.user
+                          }`}
+                        >
+                          {ROLE_OPTIONS.map((role) => (
+                            <option key={role} value={role} className="bg-[#1C1E24] text-[#F5F3EF]">
+                              {role.charAt(0).toUpperCase() + role.slice(1)}
+                            </option>
+                          ))}
+                        </select>
+                        <svg
+                          className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </div>
                     </td>
+
                     <td className="px-5 py-4">
                       <span
                         className={`rounded-full px-3 py-1 text-xs font-medium ${
@@ -136,27 +171,18 @@ export default function ManageUsersPage() {
                         {status}
                       </span>
                     </td>
+
                     <td className="px-5 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => toggleBlock(u._id, status)}
-                          className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                            status === "Blocked"
-                              ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
-                              : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
-                          }`}
-                        >
-                          {status === "Blocked" ? "Unblock" : "Block"}
-                        </button>
-                        {u.role !== "admin" && (
-                          <button
-                            onClick={() => changeRole(u._id, "admin")}
-                            className="rounded-lg bg-[#FF5B3C]/15 px-3 py-1.5 text-xs font-semibold text-[#FF5B3C] hover:bg-[#FF5B3C]/25"
-                          >
-                            Make Admin
-                          </button>
-                        )}
-                      </div>
+                      <button
+                        onClick={() => toggleBlock(u._id, status)}
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                          status === "Blocked"
+                            ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
+                            : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
+                        }`}
+                      >
+                        {status === "Blocked" ? "Unblock" : "Block"}
+                      </button>
                     </td>
                   </tr>
                 );

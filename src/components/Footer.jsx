@@ -49,7 +49,7 @@ export default function Footer() {
         {/* Logo + tagline */}
         <div>
           <span className="text-lg font-extrabold uppercase tracking-tight text-[#F5F3EF]">
-            Iron<span className="text-[#FF5B3C]">Pulse</span>
+            Gym<span className="text-[#FF5B3C]">Care</span>
           </span>
           <p className="mt-3 max-w-[220px] text-xs text-[#9A9CA6]">
             Book classes, find trainers, and stay accountable to your training.
@@ -74,7 +74,7 @@ export default function Footer() {
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-[#9A9CA6]">Contact</p>
           <ul className="flex flex-col gap-2 text-sm text-[#F5F3EF]/90">
-            <li>hello@ironpulse.com</li>
+            <li>hello@GymeCare.com</li>
             <li>+880 1XXX-XXXXXX</li>
             <li>Dhaka, Bangladesh</li>
           </ul>
@@ -101,7 +101,7 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto mt-10 max-w-6xl border-t border-white/10 pt-6 text-center text-xs text-[#9A9CA6]">
-        © {year} IronPulse. All rights reserved.
+        © {year} GymCare. All rights reserved.
       </div>
     </footer>
   );

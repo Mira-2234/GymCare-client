@@ -252,13 +252,46 @@ function AdminOverview({ user }) {
   );
 }
 
-// ─── Trainer Overview placeholder ────────────────────────────────────────
+// ─── Trainer Overview ─────────────────────────────────────────────────────
 function TrainerOverview({ user }) {
+  const [stats, setStats] = useState({ totalClasses: 0, totalStudents: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user?.email) return;
+    const controller = new AbortController();
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainer/stats?trainerEmail=${user.email}`, {
+      signal: controller.signal,
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setStats(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") return;
+        setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [user?.email]);
+
   return (
     <>
-      <div className="mt-6 rounded-2xl border border-white/10 bg-[#1C1E24] p-6 text-center text-sm text-[#9A9CA6]">
-        Trainer Overview — coming soon.
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <StatCard
+          label="Total Classes Created"
+          value={loading ? "..." : stats.totalClasses}
+          icon="🏋️"
+        />
+        <StatCard
+          label="Total Students Enrolled"
+          value={loading ? "..." : stats.totalStudents}
+          icon="👥"
+        />
       </div>
+
       <ProfileCard user={user} badgeLabel="Trainer" badgeColor="#4F8EF7" />
     </>
   );
