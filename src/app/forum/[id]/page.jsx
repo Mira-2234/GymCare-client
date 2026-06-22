@@ -166,7 +166,11 @@ export default function ForumPostDetailsPage() {
     if (!id) return;
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/comments/${id}`)
       .then((r) => r.json())
-      .then((d) => setComments(d.comments ?? []))
+      // 🔴 fix #1 — d.comments array না হলে, বা ভেতরে invalid item থাকলে filter করে বাদ দেওয়া
+      .then((d) => {
+        const safeComments = Array.isArray(d.comments) ? d.comments : [];
+        setComments(safeComments.filter((c) => c && c._id));
+      })
       .catch((err) => console.error("Failed to fetch comments:", err));
   }, [id]);
 
@@ -215,13 +219,21 @@ export default function ForumPostDetailsPage() {
           text: commentText,
         }),
       });
+
       const data = await res.json();
+
+      // 🔴 fix #2 — response fail করলে বা comment object না থাকলে এখানেই থামাও,
+      // undefined কখনো state এ push হবে না
+      if (!res.ok || !data?.comment?._id) {
+        throw new Error(data?.error || "Failed to post comment.");
+      }
+
       setComments((prev) => [data.comment, ...prev]);
       setCommentText("");
       toast.success("Comment posted!");
     } catch (err) {
       console.error("Comment post error:", err);
-      toast.error("Failed to post comment.");
+      toast.error(err?.message || "Failed to post comment.");
     } finally {
       setPostingComment(false);
     }
@@ -229,18 +241,25 @@ export default function ForumPostDetailsPage() {
 
   const handleEditComment = async (commentId, newText) => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/comments/${commentId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/comments/${commentId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userEmail: session.user.email, text: newText }),
       });
+
+      // 🔴 fix #3 — edit request fail করলে UI optimistic update না করা
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData?.error || "Failed to update comment.");
+      }
+
       setComments((prev) =>
         prev.map((c) => (c._id === commentId ? { ...c, text: newText, editedAt: new Date() } : c))
       );
       toast.success("Comment updated.");
     } catch (err) {
       console.error("Edit comment error:", err);
-      toast.error("Failed to update comment.");
+      toast.error(err?.message || "Failed to update comment.");
     }
   };
 
@@ -248,15 +267,21 @@ export default function ForumPostDetailsPage() {
     if (!confirm("Delete this comment?")) return;
 
     try {
-      await fetch(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/comments/${commentId}?userEmail=${session.user.email}`,
         { method: "DELETE" }
       );
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData?.error || "Failed to delete comment.");
+      }
+
       setComments((prev) => prev.filter((c) => c._id !== commentId));
       toast.success("Comment deleted.");
     } catch (err) {
       console.error("Delete comment error:", err);
-      toast.error("Failed to delete comment.");
+      toast.error(err?.message || "Failed to delete comment.");
     }
   };
 
@@ -376,7 +401,8 @@ export default function ForumPostDetailsPage() {
                 No comments yet. Be the first to share your thoughts!
               </p>
             ) : (
-              comments.map((comment) => (
+              // 🔴 fix #4 — render এর সময়েও extra safety, filter(Boolean) দিয়ে
+              comments.filter(Boolean).map((comment) => (
                 <CommentItem
                   key={comment._id}
                   comment={comment}

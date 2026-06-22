@@ -7,16 +7,47 @@ import toast from "react-hot-toast";
 const ROLE_STYLES = {
   admin: "bg-[#FF5B3C]/15 text-[#FF5B3C]",
   trainer: "bg-blue-500/15 text-blue-400",
-  user: "bg-emerald-500/15 text-emerald-400",
+  user: "bg-white/5 text-[#9A9CA6]",
 };
 
-const ROLE_OPTIONS = ["user", "trainer", "admin"];
+function confirmAction(message, onConfirm) {
+  toast(
+    (t) => (
+      <div className="flex flex-col gap-3">
+        <p className="text-sm font-semibold text-[#F5F3EF]">{message}</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { toast.dismiss(t.id); onConfirm(); }}
+            className="flex-1 rounded-lg bg-[#FF5B3C]/20 py-1.5 text-xs font-semibold text-[#FF5B3C] hover:bg-[#FF5B3C]/30"
+          >
+            Confirm
+          </button>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="flex-1 rounded-lg bg-white/10 py-1.5 text-xs font-semibold text-[#9A9CA6] hover:bg-white/15"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ),
+    {
+      duration: Infinity,
+      style: {
+        background: "#1C1E24",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: "14px",
+        padding: "16px",
+        minWidth: "220px",
+      },
+    }
+  );
+}
 
 export default function ManageUsersPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState(null);
 
   const fetchUsers = () => {
     if (!user?.email) return;
@@ -33,60 +64,57 @@ export default function ManageUsersPage() {
     fetchUsers();
   }, [user]);
 
-  const changeRole = async (id, newRole, currentRole) => {
-    if (newRole === currentRole) return;
-
-    setUpdatingId(id);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${id}/role?email=${user.email}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ role: newRole }),
-        }
-      );
-
-      if (!res.ok) throw new Error();
-
-      setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, role: newRole } : u))
-      );
-      toast.success(`Role updated to ${newRole}.`);
-    } catch {
-      toast.error("Failed to update role.");
-    } finally {
-      setUpdatingId(null);
-    }
+  const handleRoleChange = async (id, role, name) => {
+    confirmAction(`Make "${name}" an Admin?`, async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${id}/role?email=${user.email}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ role }),
+          }
+        );
+        if (!res.ok) throw new Error();
+        toast.success(`Role updated to ${role}.`);
+        fetchUsers();
+      } catch {
+        toast.error("Failed to update role.");
+      }
+    });
   };
 
-  const toggleBlock = async (id, currentStatus) => {
+  const handleStatusToggle = async (id, currentStatus, name) => {
     const newStatus = currentStatus === "Blocked" ? "Active" : "Blocked";
+    const message = newStatus === "Blocked"
+      ? `Block "${name}"? They won't be able to book, comment, or apply.`
+      : `Unblock "${name}"?`;
 
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${id}/status?email=${user.email}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: newStatus }),
-        }
-      );
-
-      if (!res.ok) throw new Error();
-      setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, status: newStatus } : u))
-      );
-      toast.success(`User ${newStatus.toLowerCase()}.`);
-    } catch {
-      toast.error("Failed to update status.");
-    }
+    confirmAction(message, async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/${id}/status?email=${user.email}`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: newStatus }),
+          }
+        );
+        if (!res.ok) throw new Error();
+        toast.success(`User ${newStatus === "Blocked" ? "blocked" : "unblocked"}.`);
+        fetchUsers();
+      } catch {
+        toast.error("Failed to update status.");
+      }
+    });
   };
 
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="text-xl font-bold text-[#F5F3EF]">Manage Users</h1>
-      <p className="mt-1 text-sm text-[#9A9CA6]">View and manage all registered users.</p>
+      <p className="mt-1 text-sm text-[#9A9CA6]">
+        View and manage all registered users — {users.length} total.
+      </p>
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
         <table className="w-full text-left text-sm">
@@ -114,10 +142,11 @@ export default function ManageUsersPage() {
             ) : (
               users.map((u) => {
                 const status = u.status || "Active";
-                const currentRole = u.role || "user";
+                const isCurrentAdmin = u._id === user?.id;
 
                 return (
                   <tr key={u._id} className="border-t border-white/10 bg-[#14151A]">
+                    {/* User */}
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <img
@@ -132,57 +161,51 @@ export default function ManageUsersPage() {
                       </div>
                     </td>
 
+                    {/* Role */}
                     <td className="px-5 py-4">
-                      <div className="relative inline-block">
-                        <select
-                          value={currentRole}
-                          disabled={updatingId === u._id}
-                          onChange={(e) => changeRole(u._id, e.target.value, currentRole)}
-                          className={`cursor-pointer appearance-none rounded-full border-0 px-3 py-1 pr-7 text-xs font-medium capitalize outline-none disabled:opacity-50 ${
-                            ROLE_STYLES[currentRole] || ROLE_STYLES.user
-                          }`}
-                        >
-                          {ROLE_OPTIONS.map((role) => (
-                            <option key={role} value={role} className="bg-[#1C1E24] text-[#F5F3EF]">
-                              {role.charAt(0).toUpperCase() + role.slice(1)}
-                            </option>
-                          ))}
-                        </select>
-                        <svg
-                          className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M6 9l6 6 6-6" />
-                        </svg>
-                      </div>
+                      <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${ROLE_STYLES[u.role] || ROLE_STYLES.user}`}>
+                        {u.role || "user"}
+                      </span>
                     </td>
 
+                    {/* Status */}
                     <td className="px-5 py-4">
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          status === "Blocked"
-                            ? "bg-red-500/15 text-red-400"
-                            : "bg-emerald-500/15 text-emerald-400"
-                        }`}
-                      >
+                      <span className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        status === "Blocked"
+                          ? "bg-red-500/15 text-red-400"
+                          : "bg-emerald-500/15 text-emerald-400"
+                      }`}>
                         {status}
                       </span>
                     </td>
 
+                    {/* Actions */}
                     <td className="px-5 py-4">
-                      <button
-                        onClick={() => toggleBlock(u._id, status)}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                          status === "Blocked"
-                            ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
-                            : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
-                        }`}
-                      >
-                        {status === "Blocked" ? "Unblock" : "Block"}
-                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        {/* Block / Unblock — admin nijer nij ke block korte parbe na */}
+                        {!isCurrentAdmin && (
+                          <button
+                            onClick={() => handleStatusToggle(u._id, status, u.name)}
+                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                              status === "Blocked"
+                                ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
+                                : "bg-red-500/15 text-red-400 hover:bg-red-500/25"
+                            }`}
+                          >
+                            {status === "Blocked" ? "Unblock" : "Block"}
+                          </button>
+                        )}
+
+                        {/* Make Admin — shudhu user role er jonno, admin/trainer na */}
+                        {u.role === "user" && !isCurrentAdmin && (
+                          <button
+                            onClick={() => handleRoleChange(u._id, "admin", u.name)}
+                            className="rounded-lg bg-[#FF5B3C]/15 px-3 py-1.5 text-xs font-semibold text-[#FF5B3C] hover:bg-[#FF5B3C]/25"
+                          >
+                            Make Admin
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * src/app/dashboard/page.js  —  Role-aware Overview
- *
- * একই /dashboard route, কিন্তু user.role অনুযায়ী আলাদা content দেখাবে।
- * User → UserOverview, Admin → AdminOverview, Trainer → TrainerOverview
- */
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/useAuth";
