@@ -8,16 +8,12 @@ import { Label } from "@heroui/react";
 import { FcGoogle } from "react-icons/fc";
 import { useForm, useWatch } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
-
+import { uploadToCloudinary } from "@/lib/cloudinary";
 import toast from "react-hot-toast";
-import { uploadToImgbb } from "@/lib/imagebb";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-
-  // ছবি upload-এর জন্য আলাদা state — react-hook-form দিয়ে file input
-  // handle করা ঝামেলাযুক্ত, তাই এটা আলাদাভাবে track করছি
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -31,33 +27,27 @@ export default function RegisterPage() {
 
   const passwordValue = useWatch({ control, name: "password" });
 
-  // ── ছবি select করলে ─────────────────────────────────────────────────────
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file.");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Image must be under 2MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB.");
       return;
     }
-
     setImageFile(file);
-    // createObjectURL দিয়ে browser-এ সাথে সাথে preview দেখানো যায়,
-    // Imgbb-তে upload না হওয়া পর্যন্ত অপেক্ষা করতে হয় না
     setImagePreview(URL.createObjectURL(file));
   };
 
   const onSubmit = async (data) => {
-    // ── Step 1: ছবি থাকলে আগে Imgbb-তে upload করে URL নাও ──────────────────
     let imageUrl = null;
     if (imageFile) {
       setUploadingImage(true);
       try {
-        imageUrl = await uploadToImgbb(imageFile);
+        imageUrl = await uploadToCloudinary(imageFile);
       } catch (err) {
         toast.error(err.message || "Image upload failed. Try again.");
         setUploadingImage(false);
@@ -66,7 +56,6 @@ export default function RegisterPage() {
       setUploadingImage(false);
     }
 
-    // ── Step 2: Better Auth-এ account তৈরি করো, imageUrl (বা null) সহ ──────
     const { data: signUpData, error: signUpError } = await authClient.signUp.email({
       email: data.email,
       password: data.password,
@@ -76,7 +65,6 @@ export default function RegisterPage() {
     });
 
     if (signUpError) {
-      console.error("Sign up error:", signUpError);
       toast.error(signUpError.message || "Registration failed. Please try again.");
       return;
     }
@@ -87,32 +75,15 @@ export default function RegisterPage() {
 
   return (
     <section className="min-h-screen bg-[#14151A] flex items-center justify-center px-5 py-8">
-      <div
-        className="
-          w-full
-          max-w-4xl
-          grid
-          overflow-hidden
-          rounded-[28px]
-          border border-[#FF5B3C]/10
-          bg-[#1A1C22]
-          shadow-[0_0_100px_-40px_rgba(255,91,60,.30)]
-          lg:grid-cols-2
-        "
-      >
+      <div className="w-full max-w-4xl grid overflow-hidden rounded-[28px] border border-[#FF5B3C]/10 bg-[#1A1C22] shadow-[0_0_100px_-40px_rgba(255,91,60,.30)] lg:grid-cols-2">
+        
         {/* LEFT IMAGE */}
         <div className="relative hidden lg:block">
           <img src="/g2.jpg" alt="Fitness" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#14151A] via-[#14151A]/20 to-transparent" />
           <div className="absolute left-8 bottom-8">
-            <h2 className="text-4xl font-black leading-tight text-white">
-              Train
-              <br />
-              Beyond Limits
-            </h2>
-            <p className="mt-3 max-w-[260px] text-sm text-gray-300">
-              Build strength, discipline and confidence.
-            </p>
+            <h2 className="text-4xl font-black leading-tight text-white">Train<br />Beyond Limits</h2>
+            <p className="mt-3 max-w-[260px] text-sm text-gray-300">Build strength, discipline and confidence.</p>
           </div>
         </div>
 
@@ -150,15 +121,13 @@ export default function RegisterPage() {
                 {errors.email && <p className="text-red-500 text-xs px-1">{errors.email.message}</p>}
               </div>
 
-              {/* PROFILE IMAGE — full dropzone style upload */}
+              {/* PROFILE IMAGE — Cloudinary upload */}
               <div className="flex flex-col gap-1.5 w-full">
                 <Label className="text-xs font-semibold text-gray-400 px-1">Profile Image</Label>
-
                 <label
                   htmlFor="profile-image-upload"
                   className="flex cursor-pointer items-center gap-4 rounded-2xl border border-dashed border-[#FF5B3C]/30 bg-[#FF5B3C]/[0.03] p-4 transition-colors hover:border-[#FF5B3C]/60 hover:bg-[#FF5B3C]/[0.06]"
                 >
-                  {/* Icon circle — শুধু preview থাকলে actual photo দেখায় */}
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#14151A]">
                     {imagePreview ? (
                       <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
@@ -170,14 +139,12 @@ export default function RegisterPage() {
                       </svg>
                     )}
                   </div>
-
                   <div>
                     <p className="text-sm font-medium text-[#F5F3EF]">
                       {imagePreview ? "Change profile photo" : "Click to upload a profile photo"}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-gray-500">JPG, PNG · max 2MB</p>
+                    <p className="mt-0.5 text-[11px] text-gray-500">JPG, PNG · max 5MB · optional</p>
                   </div>
-
                   <input
                     id="profile-image-upload"
                     type="file"
@@ -205,11 +172,7 @@ export default function RegisterPage() {
                     placeholder="Password"
                     className="w-full rounded-xl border border-white/10 bg-[#14151A] px-5 py-3 text-white outline-none focus:border-[#FF5B3C]"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 text-[#FF5B3C]"
-                  >
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-[#FF5B3C]">
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
@@ -236,24 +199,9 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || uploadingImage}
-                className="
-                  w-full
-                  rounded-xl
-                  bg-[#FF5B3C]
-                  py-3
-                  font-semibold
-                  text-black
-                  transition
-                  hover:scale-[1.02]
-                  disabled:opacity-60
-                  disabled:cursor-not-allowed
-                "
+                className="w-full rounded-xl bg-[#FF5B3C] py-3 font-semibold text-black transition hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {uploadingImage
-                  ? "Uploading photo..."
-                  : isSubmitting
-                  ? "Creating account..."
-                  : "Create Account"}
+                {uploadingImage ? "Uploading photo..." : isSubmitting ? "Creating account..." : "Create Account"}
               </button>
             </form>
 
@@ -265,20 +213,7 @@ export default function RegisterPage() {
 
             <button
               onClick={() => authClient.signIn.social({ provider: "google", callbackURL: "/" })}
-              className="
-                flex
-                w-full
-                items-center
-                justify-center
-                gap-3
-                rounded-xl
-                border
-                border-white/10
-                py-3
-                text-white
-                transition
-                hover:border-[#FF5B3C]
-              "
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-white/10 py-3 text-white transition hover:border-[#FF5B3C]"
             >
               <FcGoogle size={20} />
               Continue with Google
@@ -286,9 +221,7 @@ export default function RegisterPage() {
 
             <p className="mt-6 text-center text-sm text-gray-400">
               Already have account?
-              <Link href="/login" className="ml-2 font-semibold text-[#FF5B3C]">
-                Login
-              </Link>
+              <Link href="/login" className="ml-2 font-semibold text-[#FF5B3C]">Login</Link>
             </p>
           </div>
         </div>

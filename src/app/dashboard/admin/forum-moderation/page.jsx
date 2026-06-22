@@ -22,7 +22,7 @@ export default function ForumModerationPage() {
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/forum-posts`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/forum-posts`)
       .then((r) => r.json())
       .then((d) => setPosts(d.posts ?? []))
       .catch((err) => console.error("Failed to fetch posts:", err))
