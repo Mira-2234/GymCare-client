@@ -35,7 +35,7 @@ export default function PaymentPage() {
           return;
         }
 
-        window.location.href = data.url; // Stripe hosted checkout e redirect
+        window.location.href = data.url; 
       } catch (err) {
         console.error("Payment init error:", err);
         toast.error("Failed to start payment.");

@@ -10,7 +10,7 @@ export default function PaymentSuccessPage() {
   const router = useRouter();
   const sessionId = searchParams.get("session_id");
 
-  const [status, setStatus] = useState("verifying"); // verifying | success | error
+  const [status, setStatus] = useState("verifying"); 
   const [booking, setBooking] = useState(null);
 
   useEffect(() => {

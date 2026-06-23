@@ -107,7 +107,6 @@ export default function LoginPage() {
               className="mt-8 space-y-4"
             >
 
-              {/* EMAIL */}
               <div>
 
                 <input
@@ -136,7 +135,6 @@ export default function LoginPage() {
 
               </div>
 
-              {/* PASSWORD */}
               <div className="relative">
 
                 <input

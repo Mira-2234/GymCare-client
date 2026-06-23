@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
-// ── Single forum post card ───────────────────────────────────────────────────
 function PostCard({ post, index }) {
   return (
     <motion.div
@@ -97,7 +96,7 @@ function Pagination({ page, totalPages, onChange }) {
   );
 }
 
-const LIMIT = 6; // 2 columns × 3 rows প্রতি পেজে
+const LIMIT = 6; 
 
 export default function CommunityForumPage() {
   const router = useRouter();
@@ -122,7 +121,7 @@ export default function CommunityForumPage() {
     setLoading(true);
     setError("");
 
-    // FIX 1: route বদলে "/forum-posts" করা হলো (আগে ভুল করে "/api/forum" ছিল)
+    
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/forum-posts?page=${page}&limit=${LIMIT}`, {
       signal: controller.signal,
     })
@@ -132,8 +131,7 @@ export default function CommunityForumPage() {
       })
       .then((data) => {
         setPosts(data.posts);
-        // FIX 2: backend response shape হলো { posts, pagination: { totalPages, ... } }
-        // আগে ভুল করে data.totalPages (flat) পড়া হচ্ছিল, যেটা সবসময় undefined ছিল
+       
         setTotalPages(data.pagination?.totalPages || 1);
         setLoading(false);
       })
