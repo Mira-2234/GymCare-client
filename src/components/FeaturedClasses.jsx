@@ -88,10 +88,6 @@ export default function FeaturedClasses() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-    // ── Data fetch ──────────────────────────────────────────────────────────
-  // আগের ভুল ছিল: fetch("/classes/featured") — এই route index.js-এ নেই।
-  // সঠিক route: "/api/classes" — এটা আগে থেকেই bookingCount অনুযায়ী
-  // sort করে রাখে, তাই limit=3 দিলেই top 3 booked class পাওয়া যাবে।
   useEffect(() => {
     const controller = new AbortController();
 
@@ -103,7 +99,7 @@ export default function FeaturedClasses() {
         return r.json();
       })
       .then((data) => {
-        console.log("FEATURED DATA:", data); // debug — কাজ করলে console-এ classes array দেখাবে
+        console.log("FEATURED DATA:", data); 
         setClasses(data.classes ?? []);
       })
       .catch((err) => {

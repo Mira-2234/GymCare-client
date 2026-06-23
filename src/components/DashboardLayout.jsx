@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * DashboardLayout — User/Trainer/Admin সব Dashboard-এ ব্যবহার হবে।
- * prop `role` দিয়ে কোন sidebar link সেট দেখাবে সেটা ঠিক হয়।
- *
- * Responsive: desktop-এ fixed sidebar, mobile-এ hamburger দিয়ে slide-in drawer।
- */
 
 import { useState } from "react";
 import Link from "next/link";
@@ -108,10 +102,10 @@ export default function DashboardLayout({ children }) {
   const { user, loading } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // role না থাকলে default "user" ধরে নিচ্ছি — backend থেকে role আসা উচিত
+  
   const role = user?.role || "user";
 
-  // Loading অবস্থায় full-page placeholder — reload bug guard
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#14151A]">
@@ -128,7 +122,7 @@ export default function DashboardLayout({ children }) {
         <SidebarContent role={role} pathname={pathname} onNavigate={() => {}} />
       </aside>
 
-      {/* Mobile sidebar drawer */}
+      {/* Mobile sidebar */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -152,9 +146,9 @@ export default function DashboardLayout({ children }) {
         )}
       </AnimatePresence>
 
-      {/* Main content area */}
+      
       <div className="flex-1">
-        {/* Mobile top bar */}
+        
         <div className="flex items-center gap-3 border-b border-white/10 bg-[#1C1E24] px-4 py-3 lg:hidden">
           <button onClick={() => setMobileOpen(true)} aria-label="Open menu">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5F3EF" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -164,7 +158,7 @@ export default function DashboardLayout({ children }) {
           <span className="text-sm font-semibold text-[#F5F3EF] capitalize">{role} Dashboard</span>
         </div>
 
-        {/* Full-width content */}
+        
         <main className="p-6 lg:p-10">{children}</main>
       </div>
     </div>
