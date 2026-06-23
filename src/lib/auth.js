@@ -25,7 +25,7 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         defaultValue: "user",
-        input: true, // signup form থেকে set করা যাবে
+        input: true, 
       },
     },
   },
