@@ -23,9 +23,7 @@ export default function LatestForumPosts() {
   useEffect(() => {
     const controller = new AbortController();
 
-    // FIX: route বদলে "/forum-posts/latest" করা হলো — তোমার backend-এর
-    // exact route name অনুযায়ী। এই route ৪টা recent post রিটার্ন করে,
-    // response shape: { posts: [...] }  (pagination object থাকে না)
+    
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/forum-posts/latest`, {
       signal: controller.signal,
     })
@@ -34,8 +32,7 @@ export default function LatestForumPosts() {
         return r.json();
       })
       .then((data) => {
-        // /latest route ৪টা পোস্ট দেয়, স্পেক চায় "3-4 most recent" —
-        // তাই প্রথম ৩টা slice করে নিচ্ছি grid-এ symmetric দেখানোর জন্য
+        
         setPosts((data.posts ?? []).slice(0, 3));
         setLoading(false);
       })
@@ -75,8 +72,7 @@ export default function LatestForumPosts() {
                         {post.title}
                       </p>
                       <p className="mt-1 text-xs text-[#9A9CA6]">{post.authorName}</p>
-                      {/* Forum Post Details — Private route, login ছাড়া গেলে
-                          PrivateRoute Login-এ redirect করবে */}
+                    
                       <Link
                         href={`/forum/${post._id}`}
                         className="mt-3 inline-block text-xs font-medium text-[#FF5B3C] hover:underline"
