@@ -16,17 +16,26 @@ function TableSkeleton() {
 
 export default function ManageTrainersPage() {
   const { data: session } = useSession();
+
+  // ✅ always array safe
   const [trainers, setTrainers] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [demotingId, setDemotingId] = useState(null);
 
   useEffect(() => {
     if (!session?.user?.email) return;
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/trainers?email=${session.user.email}`)
+   fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/trainers?email=${session.user.email}`)
       .then((r) => r.json())
-      .then((data) => setTrainers(data))
-      .catch((err) => console.error("Failed to fetch trainers:", err))
+      .then((data) => {
+        // ✅ safe fallback
+        setTrainers(data?.trainers || []);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch trainers:", err);
+        setTrainers([]); // ✅ prevent crash
+      })
       .finally(() => setLoading(false));
   }, [session]);
 
@@ -36,6 +45,7 @@ export default function ManageTrainersPage() {
     }
 
     setDemotingId(trainerId);
+
     try {
       await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/trainers/${trainerId}/demote?email=${session.user.email}`,
@@ -43,6 +53,7 @@ export default function ManageTrainersPage() {
       );
 
       setTrainers((prev) => prev.filter((t) => t._id !== trainerId));
+
       toast.success(`${trainerName} demoted to regular user.`);
     } catch (err) {
       console.error("Demote trainer error:", err);
@@ -55,15 +66,18 @@ export default function ManageTrainersPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-[#F5F3EF]">Manage Trainers</h1>
+
       <p className="mt-1 text-sm text-[#9A9CA6]">
-        All currently active trainers — {trainers.length} total.
+        All currently active trainers — {trainers?.length || 0} total.
       </p>
 
       <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-[#1C1D24]">
         {loading ? (
           <TableSkeleton />
         ) : trainers.length === 0 ? (
-          <p className="py-16 text-center text-sm text-[#9A9CA6]">No active trainers yet.</p>
+          <p className="py-16 text-center text-sm text-[#9A9CA6]">
+            No active trainers yet.
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -75,9 +89,13 @@ export default function ManageTrainersPage() {
                   <th className="px-5 py-3 text-right">Action</th>
                 </tr>
               </thead>
+
               <tbody>
                 {trainers.map((trainer) => (
-                  <tr key={trainer._id} className="border-b border-white/5 last:border-0">
+                  <tr
+                    key={trainer._id}
+                    className="border-b border-white/5 last:border-0"
+                  >
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <img
@@ -88,10 +106,16 @@ export default function ManageTrainersPage() {
                           alt={trainer.name}
                           className="h-9 w-9 rounded-full object-cover"
                         />
-                        <span className="font-semibold text-[#F5F3EF]">{trainer.name}</span>
+                        <span className="font-semibold text-[#F5F3EF]">
+                          {trainer.name}
+                        </span>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-[#9A9CA6]">{trainer.email}</td>
+
+                    <td className="px-5 py-4 text-[#9A9CA6]">
+                      {trainer.email}
+                    </td>
+
                     <td className="px-5 py-4 text-[#9A9CA6]">
                       {trainer.createdAt
                         ? new Date(trainer.createdAt).toLocaleDateString("en-US", {
@@ -101,13 +125,18 @@ export default function ManageTrainersPage() {
                           })
                         : "—"}
                     </td>
+
                     <td className="px-5 py-4 text-right">
                       <button
-                        onClick={() => handleDemote(trainer._id, trainer.name)}
+                        onClick={() =>
+                          handleDemote(trainer._id, trainer.name)
+                        }
                         disabled={demotingId === trainer._id}
                         className="rounded-lg bg-red-400/10 px-3 py-1.5 text-xs font-semibold text-red-400 transition hover:bg-red-400/20 disabled:opacity-50"
                       >
-                        {demotingId === trainer._id ? "Demoting..." : "Demote to User"}
+                        {demotingId === trainer._id
+                          ? "Demoting..."
+                          : "Demote to User"}
                       </button>
                     </td>
                   </tr>

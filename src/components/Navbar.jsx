@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@heroui/react";
 import { useAuth } from "@/lib/useAuth";
+import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -277,6 +278,7 @@ export default function Navbar() {
                   </Link>
                 </li>
               )}
+              <ThemeToggle/>
               <li className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
                 {loading ? (
                   <div className="h-9 w-full animate-pulse rounded-md bg-white/10" />

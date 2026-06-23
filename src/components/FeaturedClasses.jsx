@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 function FeaturedCardSkeleton() {
   return (
@@ -26,12 +27,14 @@ function FeaturedCard({ cls, index }) {
       transition={{ duration: 0.45, delay: index * 0.08, ease: "easeOut" }}
       className="group overflow-hidden rounded-2xl border border-white/10 bg-[#1C1D24] transition-all hover:border-[#FF5B3C]/30 hover:shadow-[0_0_40px_-15px_rgba(255,91,60,.25)]"
     >
-      <div className="relative h-44 overflow-hidden">
-        <img
-          src={cls.image}
-          alt={cls.className}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+     <div className="relative h-44 overflow-hidden">
+  <Image
+    src={cls.image}
+    alt={cls.name}
+    fill
+    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+    className="object-cover transition-transform duration-500 group-hover:scale-105"
+  />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1C1D24] via-transparent to-transparent" />
 
         {index === 0 && (

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 function DetailsSkeleton() {
   return (
@@ -161,12 +162,19 @@ export default function ClassDetailsPage() {
     <div className="min-h-screen bg-[#14151A] px-6 py-12">
       <div className="mx-auto max-w-4xl">
         <div className="relative mb-8 h-72 overflow-hidden rounded-2xl border border-white/10">
-          <img src={cls.image} alt={cls.className} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#14151A] via-transparent to-transparent" />
-          <span className="absolute left-4 top-4 rounded-full bg-[#14151A]/80 px-3 py-1 text-xs font-medium text-[#FF5B3C] backdrop-blur-sm">
-            {cls.category}
-          </span>
-        </div>
+  <Image
+    src={cls.image}
+    alt={cls.name}
+    fill
+    sizes="(max-width: 896px) 100vw, 896px"
+    className="object-cover"
+    priority
+  />
+  <div className="absolute inset-0 bg-gradient-to-t from-[#14151A] via-transparent to-transparent" />
+  <span className="absolute left-4 top-4 rounded-full bg-[#14151A]/80 px-3 py-1 text-xs font-medium text-[#FF5B3C] backdrop-blur-sm">
+    {cls.category}
+  </span>
+</div>
 
         <h1 className="text-3xl font-bold text-[#F5F3EF]">{cls.className}</h1>
         <p className="mt-2 text-sm text-[#9A9CA6]">by {cls.trainerName}</p>

@@ -5,6 +5,8 @@ import StatsPage from "@/components/Stats";
 import FeaturedClasses from "@/components/FeaturedClasses";
 import { FormStateSubscribe } from "react-hook-form";
 import LatestForumPosts from "@/components/LatestForumPosts";
+import SuccessStories from "@/components/SuccessStories";
+import WhyChooseUs from "@/components/WhyChooseUs";
 
 // const FEATURED_CLASSES = [
 //   {
@@ -165,6 +167,8 @@ export default function HomePage() {
       <Hero />
       <FeaturedClasses/>
        <LatestForumPosts/>
+       <SuccessStories/>
+       <WhyChooseUs/>
       
      
     </main>
