@@ -136,7 +136,6 @@ export default function ForumPostDetailsPage() {
   const [commentText, setCommentText] = useState("");
   const [postingComment, setPostingComment] = useState(false);
 
-  // Redirect if not logged in — Private route
   useEffect(() => {
     if (!sessionLoading && !session?.user) {
       router.replace(`/login?redirect=${encodeURIComponent(`/forum/${id}`)}`);
@@ -161,12 +160,11 @@ export default function ForumPostDetailsPage() {
       .finally(() => setLoading(false));
   }, [id, session]);
 
-  // Fetch comments
   useEffect(() => {
     if (!id) return;
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/comments/${id}`)
       .then((r) => r.json())
-      // 🔴 fix #1 — d.comments array না হলে, বা ভেতরে invalid item থাকলে filter করে বাদ দেওয়া
+     
       .then((d) => {
         const safeComments = Array.isArray(d.comments) ? d.comments : [];
         setComments(safeComments.filter((c) => c && c._id));
@@ -222,8 +220,7 @@ export default function ForumPostDetailsPage() {
 
       const data = await res.json();
 
-      // 🔴 fix #2 — response fail করলে বা comment object না থাকলে এখানেই থামাও,
-      // undefined কখনো state এ push হবে না
+      
       if (!res.ok || !data?.comment?._id) {
         throw new Error(data?.error || "Failed to post comment.");
       }
@@ -247,7 +244,7 @@ export default function ForumPostDetailsPage() {
         body: JSON.stringify({ userEmail: session.user.email, text: newText }),
       });
 
-      // 🔴 fix #3 — edit request fail করলে UI optimistic update না করা
+      
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData?.error || "Failed to update comment.");
@@ -298,27 +295,27 @@ export default function ForumPostDetailsPage() {
   return (
     <div className="min-h-screen bg-[#14151A] px-6 py-12">
       <div className="mx-auto max-w-3xl">
-        {/* Image */}
+   
         <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
           <img src={post.image} alt={post.title} className="h-64 w-full object-cover" />
         </div>
 
-        {/* Author */}
+      
         <div className="mb-3 flex items-center gap-2">
           <AuthorBadge role={post.authorRole} />
           <span className="text-sm text-[#9A9CA6]">{post.authorName}</span>
           <span className="text-xs text-[#6B6D78]">· {timeAgo(post.createdAt)}</span>
         </div>
 
-        {/* Title */}
+   
         <h1 className="text-3xl font-bold text-[#F5F3EF]">{post.title}</h1>
 
-        {/* Description */}
+      
         <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-[#9A9CA6]">
           {post.description}
         </p>
 
-        {/* Like / Dislike */}
+        
         <div className="mt-6 flex items-center gap-3 border-y border-white/10 py-4">
           <button
             onClick={() => handleVote("like")}
@@ -363,13 +360,13 @@ export default function ForumPostDetailsPage() {
           </button>
         </div>
 
-        {/* Comments section */}
+       
         <div className="mt-8">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#9A9CA6]">
             Comments ({comments.length})
           </h2>
 
-          {/* Comment input */}
+        
           <div className="mb-6 flex gap-3">
             <img
               src={session.user.image || "https://api.dicebear.com/7.x/initials/svg?seed=" + session.user.name}
@@ -394,14 +391,14 @@ export default function ForumPostDetailsPage() {
             </div>
           </div>
 
-          {/* Comment list */}
+       
           <div className="rounded-2xl border border-white/10 bg-[#1C1D24] p-5">
             {comments.length === 0 ? (
               <p className="py-6 text-center text-sm text-[#6B6D78]">
                 No comments yet. Be the first to share your thoughts!
               </p>
             ) : (
-              // 🔴 fix #4 — render এর সময়েও extra safety, filter(Boolean) দিয়ে
+              
               comments.filter(Boolean).map((comment) => (
                 <CommentItem
                   key={comment._id}
