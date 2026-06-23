@@ -7,6 +7,8 @@ import { FormStateSubscribe } from "react-hook-form";
 import LatestForumPosts from "@/components/LatestForumPosts";
 import SuccessStories from "@/components/SuccessStories";
 import WhyChooseUs from "@/components/WhyChooseUs";
+import FitnessBlogPage from "@/components/FitnessBlog";
+import FitnessCalculatorPage from "@/components/Calculator";
 
 // const FEATURED_CLASSES = [
 //   {
@@ -167,6 +169,8 @@ export default function HomePage() {
       <Hero />
       <FeaturedClasses/>
        <LatestForumPosts/>
+       {/* <FitnessBlogPage/> */}
+       <FitnessCalculatorPage/>
        <SuccessStories/>
        <WhyChooseUs/>
       

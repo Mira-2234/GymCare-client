@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 function TableSkeleton() {
   return (
@@ -17,33 +18,47 @@ function TableSkeleton() {
 export default function ManageTrainersPage() {
   const { data: session } = useSession();
 
-  // ✅ always array safe
   const [trainers, setTrainers] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [demotingId, setDemotingId] = useState(null);
+
+  // Custom Modal State
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    trainerId: null,
+    trainerName: "",
+  });
 
   useEffect(() => {
     if (!session?.user?.email) return;
 
-   fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/trainers?email=${session.user.email}`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/trainers?email=${session.user.email}`)
       .then((r) => r.json())
       .then((data) => {
-        // ✅ safe fallback
         setTrainers(data?.trainers || []);
       })
       .catch((err) => {
         console.error("Failed to fetch trainers:", err);
-        setTrainers([]); // ✅ prevent crash
+        setTrainers([]);
       })
       .finally(() => setLoading(false));
   }, [session]);
 
-  const handleDemote = async (trainerId, trainerName) => {
-    if (!confirm(`Remove trainer role from ${trainerName}? They will become a regular user.`)) {
-      return;
-    }
+  // Triggers when the user clicks "Demote to User"
+  const initiateDemote = (trainerId, trainerName) => {
+    setConfirmModal({
+      isOpen: true,
+      trainerId,
+      trainerName,
+    });
+  };
 
+  // Triggers when the user clicks "Confirm" in the custom modal
+  const handleDemote = async () => {
+    const { trainerId, trainerName } = confirmModal;
+    
+    // Close modal immediately
+    setConfirmModal({ isOpen: false, trainerId: null, trainerName: "" });
     setDemotingId(trainerId);
 
     try {
@@ -53,7 +68,6 @@ export default function ManageTrainersPage() {
       );
 
       setTrainers((prev) => prev.filter((t) => t._id !== trainerId));
-
       toast.success(`${trainerName} demoted to regular user.`);
     } catch (err) {
       console.error("Demote trainer error:", err);
@@ -64,7 +78,42 @@ export default function ManageTrainersPage() {
   };
 
   return (
-    <div>
+    <div className="relative">
+      
+      {/* ─── Custom Dark Confirmation Modal (Matches image_263f03.png) ─── */}
+      <AnimatePresence>
+        {confirmModal.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-black/40 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-md rounded-2xl border border-white/10 bg-[#1C1E24] p-6 shadow-2xl text-left"
+            >
+              <p className="text-sm font-medium text-[#F5F3EF] leading-relaxed">
+                Remove trainer role from <span className="font-bold text-[#FF5B3C]">"{confirmModal.trainerName}"</span>? They will become a regular user.
+              </p>
+              
+              <div className="mt-5 flex items-center gap-3">
+                <button
+                  onClick={handleDemote}
+                  className="flex-1 rounded-xl bg-red-500/10 border border-red-500/20 py-2.5 text-xs font-bold text-red-400 hover:bg-red-500/20 transition-all"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => setConfirmModal({ isOpen: false, trainerId: null, trainerName: "" })}
+                  className="flex-1 rounded-xl bg-white/5 border border-white/5 py-2.5 text-xs font-medium text-[#9A9CA6] hover:bg-white/10 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <h1 className="text-2xl font-bold text-[#F5F3EF]">Manage Trainers</h1>
 
       <p className="mt-1 text-sm text-[#9A9CA6]">
@@ -128,9 +177,7 @@ export default function ManageTrainersPage() {
 
                     <td className="px-5 py-4 text-right">
                       <button
-                        onClick={() =>
-                          handleDemote(trainer._id, trainer.name)
-                        }
+                        onClick={() => initiateDemote(trainer._id, trainer.name)}
                         disabled={demotingId === trainer._id}
                         className="rounded-lg bg-red-400/10 px-3 py-1.5 text-xs font-semibold text-red-400 transition hover:bg-red-400/20 disabled:opacity-50"
                       >

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUpload } from "react-icons/fa";
 import { Label } from "@heroui/react";
 import { FcGoogle } from "react-icons/fc";
 import { useForm, useWatch } from "react-hook-form";
@@ -121,30 +121,12 @@ export default function RegisterPage() {
                 {errors.email && <p className="text-red-500 text-xs px-1">{errors.email.message}</p>}
               </div>
 
-              {/* PROFILE IMAGE — Cloudinary upload */}
+              {/* PROFILE IMAGE — Updated to "Choose File" Button Layout */}
               <div className="flex flex-col gap-1.5 w-full">
                 <Label className="text-xs font-semibold text-gray-400 px-1">Profile Image</Label>
-                <label
-                  htmlFor="profile-image-upload"
-                  className="flex cursor-pointer items-center gap-4 rounded-2xl border border-dashed border-[#FF5B3C]/30 bg-[#FF5B3C]/[0.03] p-4 transition-colors hover:border-[#FF5B3C]/60 hover:bg-[#FF5B3C]/[0.06]"
-                >
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#14151A]">
-                    {imagePreview ? (
-                      <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
-                    ) : (
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF5B3C" strokeWidth="1.8" aria-hidden="true">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                      </svg>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-[#F5F3EF]">
-                      {imagePreview ? "Change profile photo" : "Click to upload a profile photo"}
-                    </p>
-                    <p className="mt-0.5 text-[11px] text-gray-500">JPG, PNG · max 5MB · optional</p>
-                  </div>
+                <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#14151A] p-2 pr-4">
+                  
+                  {/* Hidden Native Input */}
                   <input
                     id="profile-image-upload"
                     type="file"
@@ -152,7 +134,35 @@ export default function RegisterPage() {
                     onChange={handleImageChange}
                     className="hidden"
                   />
-                </label>
+
+                  {/* Custom Styled Trigger Button */}
+                  <label
+                    htmlFor="profile-image-upload"
+                    className="flex cursor-pointer items-center gap-2 rounded-lg bg-white/5 border border-white/5 px-4 py-2 text-xs font-semibold text-[#F5F3EF] hover:bg-white/10 active:scale-95 transition-all shrink-0"
+                  >
+                    <FaUpload className="text-[#FF5B3C]" />
+                    Choose File
+                  </label>
+
+                  {/* Preview Avatar or File Name Status */}
+                  <div className="flex items-center gap-2 overflow-hidden w-full">
+                    {imagePreview ? (
+                      <>
+                        <img 
+                          src={imagePreview} 
+                          alt="Avatar Preview" 
+                          className="h-7 w-7 rounded-full object-cover border border-white/10 shrink-0" 
+                        />
+                        <span className="text-xs text-gray-400 truncate">
+                          {imageFile ? imageFile.name : "image_selected.png"}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-500 truncate">No file chosen</span>
+                    )}
+                  </div>
+
+                </div>
               </div>
 
               {/* PASSWORD */}

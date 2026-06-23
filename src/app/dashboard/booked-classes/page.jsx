@@ -33,6 +33,7 @@ export default function BookedClassesPage() {
       })
       .catch((err) => {
         if (err.name === "AbortError") return;
+        console.error("Fetch bookings error:", err);
         setLoading(false);
       });
 
@@ -66,21 +67,33 @@ export default function BookedClassesPage() {
               </tr>
             </thead>
             <tbody>
-              {bookings.map((b) => (
-                <tr key={b._id} className="border-b border-white/5 last:border-0">
-                  <td className="px-5 py-4 font-medium text-[#F5F3EF]">{b.className}</td>
-                  <td className="px-5 py-4 text-[#9A9CA6]">{b.trainerName}</td>
-                  <td className="px-5 py-4 text-[#9A9CA6]">{b.schedule || "—"}</td>
-                  <td className="px-5 py-4 text-right">
-                    <Link
-                      href={`/classes/${b.classId}`}
-                      className="text-xs font-medium text-[#FF5B3C] hover:underline"
-                    >
-                      View Details
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {bookings.map((b) => {
+                // অবজেক্ট বা স্ট্রিং চেক করে শিডিউল ফরম্যাট করা হচ্ছে
+                let displaySchedule = "—";
+                if (typeof b.schedule === "string") {
+                  displaySchedule = b.schedule;
+                } else if (b.schedule?.day || b.schedule?.time) {
+                  displaySchedule = `${b.schedule.day || ""} (${b.schedule.time || b.schedule.slotTime || ""})`;
+                }
+
+                return (
+                  <tr key={b._id} className="border-b border-white/5 last:border-0 hover:bg-white/[0.01] transition-colors">
+                    <td className="px-5 py-4 font-semibold text-[#F5F3EF]">{b.className}</td>
+                    <td className="px-5 py-4 text-[#9A9CA6]">{b.trainerName}</td>
+                    <td className="px-5 py-4 text-xs text-[#9A9CA6] max-w-[220px] truncate">
+                      {displaySchedule}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <Link
+                        href={`/classes/${b.classId}`}
+                        className="text-xs font-semibold text-[#FF5B3C] hover:underline"
+                      >
+                        View Details
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

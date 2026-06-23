@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
-import toast from "react-hot-toast";
 
 export default function BookingConfirmationPage() {
   const { id } = useParams();
@@ -30,7 +29,7 @@ export default function BookingConfirmationPage() {
   }, [id]);
 
   const handleProceedToPay = () => {
-    router.push(`/payment/${id}`);   // ← eikhane gele Stripe checkout trigger hobe
+    router.push(`/payment/${id}`);   
   };
 
   if (loading || sessionLoading || !session?.user) {
@@ -65,7 +64,7 @@ export default function BookingConfirmationPage() {
         </p>
 
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-[1.3fr_1fr]">
-          {/* ── Order Summary ───────────────────────────── */}
+         
           <div className="rounded-2xl border border-white/10 bg-[#1C1D24] p-6">
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#9A9CA6]">
               Order Summary
@@ -91,7 +90,7 @@ export default function BookingConfirmationPage() {
             </div>
           </div>
 
-          {/* ── Payment Box ─────────────────────────────── */}
+          
           <div className="h-fit rounded-2xl border border-white/10 bg-[#1C1D24] p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-[#9A9CA6]">
