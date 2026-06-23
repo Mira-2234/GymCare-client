@@ -3,8 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
-import { ThemeProvider } from "@/components/ThemeProvider";
-
+import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,25 +15,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  title: "GymCare",
-  description: "Fitness & Gym Management Platform",
-};
-
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      {/* Navbar and Footer must live INSIDE body, alongside {children} — not
-          as siblings of <body>, and not directly under <html>. That's what
-          was causing the hydration error. */}
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Navbar />
-        
-        <ThemeProvider>
+
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+        >
+          <Navbar />
           {children}
+          <Toaster />
+          <Footer />
         </ThemeProvider>
-         <Toaster />
-        <Footer />
+
       </body>
     </html>
   );

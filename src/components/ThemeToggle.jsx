@@ -5,28 +5,26 @@ import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Hydration ম্যাচ করার জন্য মাউন্ট হওয়া পর্যন্ত অপেক্ষা করা
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
-  if (!mounted) {
-    return <div className="w-9 h-9" />; // ব্ল্যাঙ্ক স্পেস হোল্ডার
-  }
+  if (!mounted) return null;
+
+  const currentTheme = theme === "system" ? resolvedTheme : theme;
 
   return (
     <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-xl bg-white/5 border border-white/10 text-[#9A9CA6] hover:text-[#F5F3EF] dark:bg-white/5 dark:border-white/10 dark:text-[#9A9CA6] dark:hover:text-[#F5F3EF] light:bg-black/5 light:border-black/10 light:text-black/60 transition-all duration-300"
-      aria-label="Toggle Theme"
+      onClick={() =>
+        setTheme(currentTheme === "dark" ? "light" : "dark")
+      }
+      className="p-2 rounded-xl border"
     >
-      {theme === "dark" ? (
-        <Sun className="h-5 w-5 text-amber-400" />
+      {currentTheme === "dark" ? (
+        <Sun className="w-5 h-5 text-yellow-400" />
       ) : (
-        <Moon className="h-5 w-5 text-indigo-600" />
+        <Moon className="w-5 h-5 text-blue-600" />
       )}
     </button>
   );

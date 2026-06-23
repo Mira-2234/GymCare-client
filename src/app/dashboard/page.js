@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/useAuth";
 import {
@@ -17,9 +16,8 @@ import {
   Legend,
 } from "recharts";
 
-const PIE_COLORS = ["#FF5B3C", "#4F8EF7", "#FFB23C"]; // Admin, Trainer, User
+const PIE_COLORS = ["#FF5B3C", "#4F8EF7", "#FFB23C"];
 
-// ─── Shared UI pieces ─────────────────────────────────────────────────────
 function StatCard({ label, value, icon }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-[#1C1E24] p-5">
@@ -70,11 +68,22 @@ function ApplicationStatusBadge({ status }) {
   );
 }
 
+// 🔴 সাধারণ error banner — সমস্যা হলে UI তেই দেখাবে, silent fail হবে না
+function ErrorBanner({ message }) {
+  if (!message) return null;
+  return (
+    <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-400">
+      {message}
+    </div>
+  );
+}
+
 // ─── User Overview ─────────────────────────────────────────────────────────
 function UserOverview({ user }) {
   const [stats, setStats] = useState({ bookedCount: 0, favoritesCount: 0 });
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // 🔴
 
   useEffect(() => {
     if (!user?.email) return;
@@ -83,18 +92,31 @@ function UserOverview({ user }) {
     Promise.all([
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard/user-stats?userEmail=${user.email}`, {
         signal: controller.signal,
-      }).then((r) => r.json()),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainer-applications/my?userEmail=${user.email}`, {
+        credentials: "include",
+      }),
+     fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainer/stats?trainerEmail=${user.email}`, {
         signal: controller.signal,
-      }).then((r) => r.json()),
+        credentials: "include",
+      }),
     ])
-      .then(([statsData, appData]) => {
+      .then(async ([statsRes, appRes]) => {
+       
+        if (!statsRes.ok) {
+          const errData = await statsRes.json().catch(() => ({}));
+          throw new Error(errData?.error || `Stats request failed (${statsRes.status})`);
+        }
+
+        const statsData = await statsRes.json();
+        const appData = await appRes.json();
+
         setStats(statsData);
         setApplication(appData.application);
         setLoading(false);
       })
       .catch((err) => {
         if (err.name === "AbortError") return;
+        console.error("UserOverview fetch error:", err); // 🔴 console এ দেখা যাবে
+        setError(err.message);
         setLoading(false);
       });
 
@@ -103,6 +125,8 @@ function UserOverview({ user }) {
 
   return (
     <>
+      <ErrorBanner message={error} />
+
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <StatCard label="Total Booked Classes" value={loading ? "..." : stats.bookedCount} icon="📅" />
         <StatCard label="Total Favorites" value={loading ? "..." : stats.favoritesCount} icon="♥" />
@@ -142,6 +166,7 @@ function AdminOverview({ user }) {
     usersByRole: [],
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // 🔴
 
   useEffect(() => {
     if (!user?.email) return;
@@ -149,14 +174,23 @@ function AdminOverview({ user }) {
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/stats?email=${user.email}`, {
       signal: controller.signal,
+      credentials: "include",
     })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) {
+          const errData = await r.json().catch(() => ({}));
+          throw new Error(errData?.error || `Admin stats failed (${r.status})`);
+        }
+        return r.json();
+      })
       .then((data) => {
         setStats(data);
         setLoading(false);
       })
       .catch((err) => {
         if (err.name === "AbortError") return;
+        console.error("AdminOverview fetch error:", err); // 🔴
+        setError(err.message);
         setLoading(false);
       });
 
@@ -165,6 +199,8 @@ function AdminOverview({ user }) {
 
   return (
     <>
+      <ErrorBanner message={error} />
+
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <StatCard label="Total Users" value={loading ? "..." : stats.totalUsers} icon="👥" />
         <StatCard
@@ -181,64 +217,70 @@ function AdminOverview({ user }) {
 
       <ProfileCard user={user} badgeLabel="Admin" badgeColor="#FF5B3C" />
 
-      {!loading && (
+      {!loading && !error && (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {/* ── Classes by Category (Bar Chart) ── */}
           <div className="rounded-2xl border border-white/10 bg-[#1C1E24] p-6">
             <h2 className="mb-4 text-sm font-semibold text-[#F5F3EF]">Classes by Category</h2>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={stats.classesByCategory}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                <XAxis dataKey="category" stroke="#9A9CA6" fontSize={11} />
-                <YAxis stroke="#9A9CA6" fontSize={11} allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#14151A",
-                    border: "1px solid #ffffff1a",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Bar dataKey="count" fill="#FF5B3C" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {stats.classesByCategory?.length === 0 ? (
+              <p className="py-10 text-center text-xs text-[#6B6D78]">No class data yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={stats.classesByCategory}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                  <XAxis dataKey="category" stroke="#9A9CA6" fontSize={11} />
+                  <YAxis stroke="#9A9CA6" fontSize={11} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#14151A",
+                      border: "1px solid #ffffff1a",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Bar dataKey="count" fill="#FF5B3C" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
-          {/* ── User Role Distribution (Pie Chart) ── */}
           <div className="rounded-2xl border border-white/10 bg-[#1C1E24] p-6">
             <h2 className="mb-4 text-sm font-semibold text-[#F5F3EF]">User Role Distribution</h2>
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={stats.usersByRole}
-                  dataKey="count"
-                  nameKey="role"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={75}
-                  label={({ role, percent }) => `${role} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
-                  fontSize={11}
-                >
-                  {stats.usersByRole.map((entry, index) => (
-                    <Cell key={entry.role} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#14151A",
-                    border: "1px solid #ffffff1a",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                  }}
-                />
-                <Legend
-                  formatter={(value) => (
-                    <span style={{ color: "#9A9CA6", fontSize: 11 }}>{value}</span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            {stats.usersByRole?.length === 0 ? (
+              <p className="py-10 text-center text-xs text-[#6B6D78]">No user data yet.</p>
+            ) : (
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={stats.usersByRole}
+                    dataKey="count"
+                    nameKey="role"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={75}
+                    label={({ role, percent }) => `${role} ${(percent * 100).toFixed(0)}%`}
+                    labelLine={false}
+                    fontSize={11}
+                  >
+                    {stats.usersByRole.map((entry, index) => (
+                      <Cell key={entry.role} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#14151A",
+                      border: "1px solid #ffffff1a",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Legend
+                    formatter={(value) => (
+                      <span style={{ color: "#9A9CA6", fontSize: 11 }}>{value}</span>
+                    )}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       )}
@@ -250,6 +292,7 @@ function AdminOverview({ user }) {
 function TrainerOverview({ user }) {
   const [stats, setStats] = useState({ totalClasses: 0, totalStudents: 0 });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // 🔴
 
   useEffect(() => {
     if (!user?.email) return;
@@ -257,14 +300,23 @@ function TrainerOverview({ user }) {
 
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/trainer/stats?trainerEmail=${user.email}`, {
       signal: controller.signal,
+      credentials: "include",
     })
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) {
+          const errData = await r.json().catch(() => ({}));
+          throw new Error(errData?.error || `Trainer stats failed (${r.status})`);
+        }
+        return r.json();
+      })
       .then((data) => {
         setStats(data);
         setLoading(false);
       })
       .catch((err) => {
         if (err.name === "AbortError") return;
+        console.error("TrainerOverview fetch error:", err); // 🔴
+        setError(err.message);
         setLoading(false);
       });
 
@@ -273,6 +325,8 @@ function TrainerOverview({ user }) {
 
   return (
     <>
+      <ErrorBanner message={error} />
+
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <StatCard
           label="Total Classes Created"
@@ -291,7 +345,7 @@ function TrainerOverview({ user }) {
   );
 }
 
-// ─── Main Page — role অনুযায়ী switch করে ────────────────────────────────
+// ─── Main Page ────────────────────────────────────────────────────────────
 export default function DashboardOverviewPage() {
   const { user, loading: authLoading } = useAuth();
   const role = user?.role || "user";

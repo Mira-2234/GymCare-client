@@ -6,6 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@heroui/react";
 import { useAuth } from "@/lib/useAuth";
+
+import NotificationBell from "./NotificationBell";
 import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
@@ -51,9 +53,6 @@ function PulseMark() {
   );
 }
 
-// ─── Custom Avatar Dropdown ──────────────────────────────────────────────────
-// HeroUI-র default Dropdown white theme দেখায় — তাই সম্পূর্ণ custom বানানো।
-// useRef দিয়ে outside click detect করা হচ্ছে।
 function AvatarMenu({ user, onLogout, onDashboard }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -70,7 +69,6 @@ function AvatarMenu({ user, onLogout, onDashboard }) {
 
   return (
     <div ref={ref} className="relative">
-      {/* Avatar circle — click করলে toggle */}
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Open account menu"
@@ -78,17 +76,12 @@ function AvatarMenu({ user, onLogout, onDashboard }) {
         className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#FF5B3C]/20 text-sm font-bold text-[#FF5B3C] transition hover:border-[#FF5B3C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5B3C]"
       >
         {user?.image ? (
-          <img
-            src={user.image}
-            alt={user?.name}
-            className="h-9 w-9 object-cover"
-          />
+          <img src={user.image} alt={user?.name} className="h-9 w-9 object-cover" />
         ) : (
           getInitials(user?.name)
         )}
       </button>
 
-      {/* Dropdown panel */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -98,21 +91,16 @@ function AvatarMenu({ user, onLogout, onDashboard }) {
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="absolute right-0 top-12 z-50 w-52 overflow-hidden rounded-2xl border border-white/10 bg-[#1C1E24] shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
           >
-            
             <div className="border-b border-white/10 px-4 py-3">
-              <p className="truncate text-sm font-semibold text-[#F5F3EF]">
-                {user?.name}
-              </p>
+              <p className="truncate text-sm font-semibold text-[#F5F3EF]">{user?.name}</p>
               <p className="truncate text-xs text-[#9A9CA6]">{user?.email}</p>
             </div>
 
-            {/* Dashboard */}
             <button
               onClick={() => { setOpen(false); onDashboard(); }}
               className="flex w-full items-center gap-3 px-4 py-3 text-sm text-[#F5F3EF] transition-colors hover:bg-white/[0.06]"
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <rect x="3" y="3" width="7" height="7" rx="1"/>
                 <rect x="14" y="3" width="7" height="7" rx="1"/>
                 <rect x="3" y="14" width="7" height="7" rx="1"/>
@@ -121,13 +109,11 @@ function AvatarMenu({ user, onLogout, onDashboard }) {
               Dashboard
             </button>
 
-            {/* Logout */}
             <button
               onClick={() => { setOpen(false); onLogout(); }}
               className="flex w-full items-center gap-3 border-t border-white/10 px-4 py-3 text-sm font-medium text-[#FF5B3C] transition-colors hover:bg-[#FF5B3C]/10"
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                 <polyline points="16 17 21 12 16 7"/>
                 <line x1="21" y1="12" x2="9" y2="12"/>
@@ -140,7 +126,6 @@ function AvatarMenu({ user, onLogout, onDashboard }) {
     </div>
   );
 }
-
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -209,15 +194,20 @@ export default function Navbar() {
         </ul>
 
         {/* Desktop auth actions */}
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           {loading ? (
             <div className="h-9 w-9 animate-pulse rounded-full bg-white/10" />
           ) : user ? (
-            <AvatarMenu
-              user={user}
-              onLogout={handleLogout}
-              onDashboard={() => router.push("/dashboard")}
-            />
+            <>
+              {/* NotificationBell — logged in user er jonno */}
+              <NotificationBell />
+              <AvatarMenu
+                user={user}
+                onLogout={handleLogout}
+                onDashboard={() => router.push("/dashboard")}
+              />
+            </>
           ) : (
             <>
               <Button
@@ -278,7 +268,13 @@ export default function Navbar() {
                   </Link>
                 </li>
               )}
-              <ThemeToggle/>
+
+              {/* Mobile — ThemeToggle + NotificationBell */}
+              <li className="flex items-center justify-between border-t border-white/10 pt-3">
+                <ThemeToggle />
+                {user && <NotificationBell />}
+              </li>
+
               <li className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
                 {loading ? (
                   <div className="h-9 w-full animate-pulse rounded-md bg-white/10" />
