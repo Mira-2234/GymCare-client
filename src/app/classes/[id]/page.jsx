@@ -33,7 +33,7 @@ export default function ClassDetailsPage() {
   const [favoriteId, setFavoriteId] = useState(null);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
-  // Redirect to login if not authenticated
+ 
   useEffect(() => {
     if (!sessionLoading && !session?.user) {
       toast.error("Please login first");
@@ -41,7 +41,7 @@ export default function ClassDetailsPage() {
     }
   }, [sessionLoading, session, router, id]);
 
-  // Fetch the class details
+  
   useEffect(() => {
     if (!id) return;
 
@@ -59,7 +59,7 @@ export default function ClassDetailsPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Check booking + favorite status
+  
   useEffect(() => {
     if (!session?.user?.email || !id) return;
 
@@ -96,7 +96,7 @@ export default function ClassDetailsPage() {
       return;
     }
 
-    router.push(`/booking/${id}`); // ← payment na, age booking confirmation page e jabe
+    router.push(`/booking/${id}`); 
   };
 
   const handleToggleFavorite = async () => {

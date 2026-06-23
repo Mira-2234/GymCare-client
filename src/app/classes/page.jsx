@@ -16,7 +16,7 @@ function ClassCard({ cls, index }) {
       transition={{ duration: 0.3, delay: index * 0.05 }}
       className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#1C1E24]"
     >
-      {/* ছবি — সব card-এ fixed height, object-cover দিয়ে equal size */}
+      
       <div className="relative h-44 w-full shrink-0 overflow-hidden">
         <img
           src={cls.image || `https://loremflickr.com/480/300/${cls.category?.toLowerCase()},gym`}
@@ -60,7 +60,7 @@ function ClassCard({ cls, index }) {
           {cls.difficulty}
         </span>
 
-        {/* View details — spacer দিয়ে সব card-এ button একই উচ্চতায় */}
+        {/* View details */}
         <div className="mt-auto">
           <Link
             href={`/classes/${cls._id}`}
@@ -74,7 +74,7 @@ function ClassCard({ cls, index }) {
   );
 }
 
-// ── Skeleton loader — data fetch হওয়ার আগে দেখাবে ─────────────────────────
+
 function SkeletonCard() {
   return (
     <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1C1E24]">
@@ -89,7 +89,7 @@ function SkeletonCard() {
   );
 }
 
-// ── Pagination controls ─────────────────────────────────────────────────────
+
 function Pagination({ page, totalPages, onChange }) {
   if (totalPages <= 1) return null;
 
@@ -104,7 +104,7 @@ function Pagination({ page, totalPages, onChange }) {
         ← Prev
       </button>
 
-      {/* Page numbers */}
+      
       {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
         <button
           key={p}
@@ -131,15 +131,14 @@ function Pagination({ page, totalPages, onChange }) {
   );
 }
 
-// ── Main Page ───────────────────────────────────────────────────────────────
-const LIMIT = 9; // প্রতি পেজে কতটা class দেখাবে
 
+const LIMIT = 9; 
 export default function AllClassesPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // URL থেকে initial state নিচ্ছি — পেজ reload করলেও filter/search ধরে রাখে
+ 
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "All");
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
@@ -149,8 +148,7 @@ export default function AllClassesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ── URL sync — search/filter/page বদলালে URL update করছি ─────────────────
-  // এতে browser back button কাজ করে, link share করা যায়
+  
   const updateURL = useCallback((s, cat, p) => {
     const params = new URLSearchParams();
     if (s) params.set("search", s);
@@ -159,10 +157,9 @@ export default function AllClassesPage() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [pathname, router]);
 
-  // ── Data fetch ────────────────────────────────────────────────────────────
-  // search, category, বা page যেকোনো একটা বদলালে নতুন করে fetch হবে
+
   useEffect(() => {
-    const controller = new AbortController(); // component unmount হলে fetch cancel হবে
+    const controller = new AbortController(); 
     setLoading(true);
     setError("");
 
@@ -173,20 +170,20 @@ export default function AllClassesPage() {
       ...(category !== "All" && { category }),
     });
 
-    // NEXT_PUBLIC_API_URL — backend (Express)-এর পুরো URL, .env.local থেকে আসছে
+    
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes?${params}`, { signal: controller.signal })
       .then((r) => {
         if (!r.ok) throw new Error("Failed to load classes.");
         return r.json();
       })
       .then((data) => {
-        // API response: { classes: [...], totalPages: N }
+        
         setClasses(data.classes);
         setTotalPages(data.totalPages);
         setLoading(false);
       })
       .catch((err) => {
-        if (err.name === "AbortError") return; // cancel হলে ignore
+        if (err.name === "AbortError") return;
         setError("Could not load classes. Please try again.");
         setLoading(false);
       });
@@ -194,11 +191,11 @@ export default function AllClassesPage() {
     return () => controller.abort();
   }, [search, category, page]);
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
+
   const handleSearch = (e) => {
     const val = e.target.value;
     setSearch(val);
-    setPage(1); // নতুন search করলে page 1-এ ফেরত
+    setPage(1);
     updateURL(val, category, 1);
   };
 
@@ -211,7 +208,7 @@ export default function AllClassesPage() {
   const handlePageChange = (p) => {
     setPage(p);
     updateURL(search, category, p);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // পেজ বদলালে উপরে scroll
+    window.scrollTo({ top: 0, behavior: "smooth" }); 
   };
 
   return (
@@ -226,12 +223,11 @@ export default function AllClassesPage() {
           </p>
         </div>
 
-        {/* Search + Filter row */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-          {/* Search input */}
+      
           <div className="relative w-full sm:max-w-xs">
-            {/* Search icon */}
+         
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9A9CA6]"
               width="14" height="14" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -247,7 +243,7 @@ export default function AllClassesPage() {
             />
           </div>
 
-          {/* Category filter pills */}
+          
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((cat) => (
               <button
@@ -265,14 +261,14 @@ export default function AllClassesPage() {
           </div>
         </div>
 
-        {/* Error state */}
+        
         {error && (
           <div className="mb-6 rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-400">
             {error}
           </div>
         )}
 
-        {/* Results count */}
+       
         {!loading && !error && (
           <p className="mb-4 text-xs text-[#9A9CA6]">
             {classes.length === 0
@@ -281,7 +277,6 @@ export default function AllClassesPage() {
           </p>
         )}
 
-        {/* Class grid */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {loading
             ? Array.from({ length: LIMIT }).map((_, i) => <SkeletonCard key={i} />)
@@ -290,7 +285,7 @@ export default function AllClassesPage() {
               ))}
         </div>
 
-        {/* Empty state */}
+       
         {!loading && classes.length === 0 && !error && (
           <div className="py-20 text-center">
             <p className="text-4xl">🏋️</p>
@@ -304,7 +299,6 @@ export default function AllClassesPage() {
           </div>
         )}
 
-        {/* Pagination */}
         <Pagination page={page} totalPages={totalPages} onChange={handlePageChange} />
       </div>
     </main>
