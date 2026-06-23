@@ -7,7 +7,7 @@ const QUICK_LINKS = [
   { label: "Login", href: "/login" },
 ];
 
-// Official "X" mark (replaces the old Twitter bird) — required by spec.
+
 function XIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 1200 1227" fill="currentColor" aria-hidden="true">
@@ -46,7 +46,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[#14151A] px-6 py-12">
       <div className="mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Logo + tagline */}
+       
         <div>
           <span className="text-lg font-extrabold uppercase tracking-tight text-[#F5F3EF]">
             Gym<span className="text-[#FF5B3C]">Care</span>
@@ -56,7 +56,7 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Quick links */}
+        
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-[#9A9CA6]">Quick Links</p>
           <ul className="flex flex-col gap-2">
@@ -70,7 +70,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Contact info — replace with your real details */}
+        
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-[#9A9CA6]">Contact</p>
           <ul className="flex flex-col gap-2 text-sm text-[#F5F3EF]/90">
@@ -80,7 +80,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Social links */}
+    
         <div>
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-[#9A9CA6]">Follow</p>
           <div className="flex gap-3">

@@ -46,7 +46,7 @@ export default function Hero() {
       </svg>
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-        {/* Text column */}
+       
         <div className="text-center lg:max-w-md lg:text-left">
         <motion.div
   initial={{ opacity: 0, y: 10 }}
@@ -140,7 +140,7 @@ export default function Hero() {
         </div>
         </div>
 
-        {/* Image column — swap the src for a real uploaded photo when ready */}
+        
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -156,33 +156,11 @@ export default function Hero() {
             <span className="h-2 w-2 rounded-full bg-[#FF5B3C]" />
           </div>
 
-          {/* Interim placeholder via LoremFlickr. For the final deploy, swap
-              this for a licensed photo matching this vibe — search "fitness
-              model gym dumbbell" on Pexels/Unsplash for free, usable shots,
-              then point src at your own /public/hero.jpg or Imgbb URL. */}
+         
           <img
-  src="/gym.jpg"
-  alt="Gym athlete"
-
-  className="
-  aspect-[4/5]
-  w-full
-
-  rounded-[28px]
-
-  border
-  border-[#FF5B3C]/15
-
-  object-cover mt-10
-  
-  shadow-[0_0_90px_-10px_rgba(255,91,60,.35)]
-
-  hover:scale-[1.02]
-
-  transition
-  duration-700
-  "
-/>
+            src="/gym.jpg"
+            alt="Gym athlete"
+            className="aspect-[4/5] w-full rounded-[28px] border border-[#FF5B3C]/15 object-cover mt-10 shadow-[0_0_90px_-10px_rgba(255,91,60,.35)] hover:scale-[1.02] transition duration-700 "/>
         </motion.div>
       </div>
     </section>
