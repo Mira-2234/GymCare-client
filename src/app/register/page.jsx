@@ -106,7 +106,6 @@ export default function RegisterPage() {
                 {errors.name && <p className="text-red-500 text-xs px-1">{errors.name.message}</p>}
               </div>
 
-              {/* EMAIL */}
               <div className="flex flex-col gap-1.5 w-full">
                 <Label className="text-xs font-semibold text-gray-400 px-1">Email Address</Label>
                 <input
@@ -121,12 +120,12 @@ export default function RegisterPage() {
                 {errors.email && <p className="text-red-500 text-xs px-1">{errors.email.message}</p>}
               </div>
 
-              {/* PROFILE IMAGE — Updated to "Choose File" Button Layout */}
+              
               <div className="flex flex-col gap-1.5 w-full">
                 <Label className="text-xs font-semibold text-gray-400 px-1">Profile Image</Label>
                 <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#14151A] p-2 pr-4">
                   
-                  {/* Hidden Native Input */}
+                  
                   <input
                     id="profile-image-upload"
                     type="file"
@@ -135,7 +134,7 @@ export default function RegisterPage() {
                     className="hidden"
                   />
 
-                  {/* Custom Styled Trigger Button */}
+                 
                   <label
                     htmlFor="profile-image-upload"
                     className="flex cursor-pointer items-center gap-2 rounded-lg bg-white/5 border border-white/5 px-4 py-2 text-xs font-semibold text-[#F5F3EF] hover:bg-white/10 active:scale-95 transition-all shrink-0"
@@ -144,7 +143,7 @@ export default function RegisterPage() {
                     Choose File
                   </label>
 
-                  {/* Preview Avatar or File Name Status */}
+                  
                   <div className="flex items-center gap-2 overflow-hidden w-full">
                     {imagePreview ? (
                       <>
@@ -165,7 +164,6 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              {/* PASSWORD */}
               <div className="flex flex-col gap-1.5 w-full">
                 <Label className="text-xs font-semibold text-gray-400 px-1">Password</Label>
                 <div className="relative">
@@ -189,7 +187,7 @@ export default function RegisterPage() {
                 {errors.password && <p className="text-red-500 text-xs px-1">{errors.password.message}</p>}
               </div>
 
-              {/* CONFIRM PASSWORD */}
+             
               <div className="flex flex-col gap-1.5 w-full">
                 <Label className="text-xs font-semibold text-gray-400 px-1">Confirm Password</Label>
                 <input

@@ -65,10 +65,9 @@ export default function FitnessCalculatorPage() {
           </p>
         </motion.div>
 
-        {/* ─── Split Screen Grid ─── */}
+        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Left Side: Calculator Form */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -126,7 +125,7 @@ export default function FitnessCalculatorPage() {
               </div>
             </form>
 
-            {/* Standard Metrics reference on bottom of left card */}
+           
             <div className="mt-8 grid grid-cols-2 gap-2 text-[11px] text-[#9A9CA6] bg-[#14151A]/60 p-3 rounded-xl border border-white/5">
               <p>Underweight: &lt; 18.5</p>
               <p>Healthy: 18.5 – 24.9</p>
@@ -135,7 +134,6 @@ export default function FitnessCalculatorPage() {
             </div>
           </motion.div>
 
-          {/* Right Side: Dynamic Illustrator & Results Card */}
           <motion.div 
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -149,7 +147,7 @@ export default function FitnessCalculatorPage() {
 
               <AnimatePresence mode="wait">
                 {!bmi ? (
-                  /* Default Fitness Graphic when no result */
+                
                   <motion.div
                     key="graphic"
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -164,7 +162,6 @@ export default function FitnessCalculatorPage() {
                     </div>
                   </motion.div>
                 ) : (
-                  /* Dynamic Results display */
                   <motion.div
                     key="results"
                     initial={{ opacity: 0, y: 15 }}
@@ -188,7 +185,7 @@ export default function FitnessCalculatorPage() {
               </AnimatePresence>
             </div>
 
-            {/* Dynamic Content Advice Text Box */}
+            
             <div className="w-full bg-[#14151A] border border-white/5 p-5 rounded-xl text-sm text-[#9A9CA6] leading-relaxed mt-6">
               <span className="block text-xs font-bold text-[#F5F3EF] uppercase tracking-wider mb-2 text-left">
                 Trainer's Recommendation:

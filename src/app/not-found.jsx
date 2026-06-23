@@ -52,7 +52,7 @@ export default function NotFound() {
           404
         </h1>
 
-        {/* TEXT */}
+      
 
         <h2
           className="
@@ -82,7 +82,7 @@ export default function NotFound() {
           or has been moved.
         </p>
 
-        {/* BUTTON */}
+       
 
         <Link
           href="/"
