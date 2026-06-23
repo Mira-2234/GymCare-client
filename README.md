@@ -8,7 +8,7 @@ GymCare is a full-stack fitness and gym management platform that connects **memb
 
 | Resource | Link |
 |---|---|
-| 🌐 Live Site | [https://b13-a10-frontend.vercel.app/](https://b13-a10-frontend.vercel.app/) |
+| 🌐 Live Site ||
 | 💻 Client Repository | TODO |
 | ⚙️ Server Repository | TODO |
 
