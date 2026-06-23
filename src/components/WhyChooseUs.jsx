@@ -7,7 +7,7 @@ export default function WhyChooseUs() {
     { 
       title: "Expert Trainers", 
       desc: "Access to verified, industry-certified professional fitness coaches.", 
-      image: "https://cdn-icons-png.flaticon.com/512/2936/2936886.png" // আপনার প্রজেক্টের যেকোনো আইকন/ইমেজ পাথ বসাতে পারেন
+      image: "https://cdn-icons-png.flaticon.com/512/2936/2936886.png" 
     },
     { 
       title: "Flexible Schedule", 
@@ -30,7 +30,7 @@ export default function WhyChooseUs() {
     <section className="py-20 bg-[#14151A] text-[#F5F3EF]">
       <div className="max-w-7xl mx-auto px-6">
         
-        {/* ─── Top Section: Title & Description Above ─── */}
+       
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -47,7 +47,7 @@ export default function WhyChooseUs() {
           </p>
         </motion.div>
 
-        {/* ─── Bottom Section: Cards Layout ─── */}
+     
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((item, idx) => (
             <motion.div
@@ -60,7 +60,7 @@ export default function WhyChooseUs() {
               className="p-6 bg-[#1C1E24] border border-white/5 rounded-2xl hover:border-[#FF5B3C]/20 transition group flex flex-col justify-between"
             >
               <div>
-                {/* Image Placeholder instead of Emoji Icon */}
+               
                 <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-[#FF5B3C]/10 transition p-3">
                   <img 
                     src={item.image} 

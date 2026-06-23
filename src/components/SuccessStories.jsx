@@ -37,7 +37,6 @@ export default function SuccessStories() {
     <section className="py-20 bg-[#14151A] text-[#F5F3EF]">
       <div className="max-w-7xl mx-auto px-6">
         
-        {/* ─── Header Section ─── */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -54,7 +53,7 @@ export default function SuccessStories() {
           </p>
         </motion.div>
 
-        {/* ─── Success Cards Grid ─── */}
+       
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {SUCCESS_STORIES.map((story, idx) => (
             <motion.div
@@ -66,24 +65,24 @@ export default function SuccessStories() {
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
               className="p-6 bg-[#1C1E24] border border-white/5 rounded-2xl hover:border-[#FF5B3C]/30 transition group flex flex-col justify-between shadow-2xl relative overflow-hidden"
             >
-              {/* Decorative Quote Mark Background */}
+             
               <span className="absolute right-6 top-4 text-7xl font-serif text-white/5 group-hover:text-[#FF5B3C]/10 transition pointer-events-none select-none">
                 “
               </span>
 
               <div>
-                {/* Badge: Transformation Type */}
+              
                 <span className="inline-block rounded-lg bg-[#FF5B3C]/10 border border-[#FF5B3C]/20 px-3 py-1 text-xs font-bold text-[#FF5B3C] mb-4">
                   {story.transformation}
                 </span>
 
-                {/* Main Quote Text */}
+               
                 <p className="text-sm sm:text-base text-[#9A9CA6] italic leading-relaxed group-hover:text-[#F5F3EF] transition duration-300">
                   "{story.quote}"
                 </p>
               </div>
 
-              {/* User Profile Footer */}
+         
               <div className="mt-8 flex items-center gap-4 pt-4 border-t border-white/5">
                 <img
                   src={story.image}
