@@ -152,7 +152,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#14151A]/90 backdrop-blur-md">
       <header className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
 
-        {/* Brand */}
+        
         <Link href="/" className="flex items-center gap-2">
           <span className="text-xl font-extrabold uppercase tracking-tight text-[#F5F3EF]">
             Gym<span className="text-[#FF5B3C]">Care</span>
@@ -160,7 +160,6 @@ export default function Navbar() {
           <PulseMark />
         </Link>
 
-        {/* Desktop nav links */}
         <ul className="hidden items-center gap-7 md:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
@@ -200,7 +199,7 @@ export default function Navbar() {
             <div className="h-9 w-9 animate-pulse rounded-full bg-white/10" />
           ) : user ? (
             <>
-              {/* NotificationBell — logged in user er jonno */}
+             
               <NotificationBell />
               <AvatarMenu
                 user={user}
@@ -269,7 +268,7 @@ export default function Navbar() {
                 </li>
               )}
 
-              {/* Mobile — ThemeToggle + NotificationBell */}
+         
               <li className="flex items-center justify-between border-t border-white/10 pt-3">
                 <ThemeToggle />
                 {user && <NotificationBell />}

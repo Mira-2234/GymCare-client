@@ -53,12 +53,11 @@ export default function NotificationBell() {
 
   useEffect(() => {
     fetchNotifications();
-    // Har 30 second e refetch
+    
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
   }, [session]);
 
-  // Click outside e close
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
