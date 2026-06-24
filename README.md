@@ -8,18 +8,8 @@ GymCare is a full-stack fitness and gym management platform that connects **memb
 
 | Resource | Link |
 |---|---|
-| 🌐 Live Site ||
-| 💻 Client Repository | TODO |
-| ⚙️ Server Repository | TODO |
+| 🌐 Live Site | https://gym-care-client.vercel.app/|
 
-### 🔑 Admin Credentials
-
-| Field | Value |
-|---|---|
-| Email | `admin@ironpulse.com` |
-| Password | `Password123` |
-
-> ⚠️ This is a demo admin account provided for evaluation purposes only.
 
 ---
 
