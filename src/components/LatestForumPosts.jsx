@@ -66,6 +66,8 @@ export default function LatestForumPosts() {
                     <Image
                       src={post.image || "https://loremflickr.com/480/300/fitness,gym"}
                       alt={post.title}
+                      width={480}
+                      height={300}
                       className="h-32 w-full object-cover"
                     />
                     <div className="p-4">
