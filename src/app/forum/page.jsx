@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 function PostCard({ post, index }) {
   return (
@@ -14,7 +15,7 @@ function PostCard({ post, index }) {
       className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#1C1E24]"
     >
       <div className="relative h-44 w-full shrink-0 overflow-hidden">
-        <img
+        <Image
           src={post.image || "https://loremflickr.com/480/300/fitness,gym"}
           alt={post.title}
           className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 function PostSkeleton() {
   return (
@@ -62,7 +63,7 @@ export default function LatestForumPosts() {
                     key={post._id}
                     className="overflow-hidden rounded-lg border border-white/10 bg-[#1C1E24]"
                   >
-                    <img
+                    <Image
                       src={post.image || "https://loremflickr.com/480/300/fitness,gym"}
                       alt={post.title}
                       className="h-32 w-full object-cover"

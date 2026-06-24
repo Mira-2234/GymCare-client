@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 function DetailsSkeleton() {
   return (
@@ -54,7 +55,7 @@ function CommentItem({ comment, currentUserEmail, onEdit, onDelete }) {
 
   return (
     <div className="flex gap-3 border-b border-white/5 py-4 last:border-0">
-      <img
+      <Image
         src={comment.userImage || "https://api.dicebear.com/7.x/initials/svg?seed=" + comment.userName}
         alt={comment.userName}
         className="h-9 w-9 flex-shrink-0 rounded-full object-cover"
@@ -297,7 +298,7 @@ export default function ForumPostDetailsPage() {
       <div className="mx-auto max-w-3xl">
    
         <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
-          <img src={post.image} alt={post.title} className="h-64 w-full object-cover" />
+          <Image src={post.image} alt={post.title} className="h-64 w-full object-cover" />
         </div>
 
       
@@ -368,7 +369,7 @@ export default function ForumPostDetailsPage() {
 
         
           <div className="mb-6 flex gap-3">
-            <img
+            <Image
               src={session.user.image || "https://api.dicebear.com/7.x/initials/svg?seed=" + session.user.name}
               alt={session.user.name}
               className="h-9 w-9 flex-shrink-0 rounded-full object-cover"

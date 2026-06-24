@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 
 const CATEGORIES = ["All", "Yoga", "Cardio", "Weights", "HIIT", "Pilates", "Cycling", "Boxing"];
@@ -18,7 +19,7 @@ function ClassCard({ cls, index }) {
     >
       
       <div className="relative h-44 w-full shrink-0 overflow-hidden">
-        <img
+        <Image
           src={cls.image || `https://loremflickr.com/480/300/${cls.category?.toLowerCase()},gym`}
           alt={cls.name}
           className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
