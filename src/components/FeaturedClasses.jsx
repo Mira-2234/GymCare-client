@@ -87,6 +87,7 @@ function FeaturedCard({ cls, index }) {
 export default function FeaturedClasses() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();

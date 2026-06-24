@@ -49,17 +49,7 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#14151A]">
       <div className="border-b border-white/10 bg-[#1C1D24]">
-        {/* <div className="mx-auto flex max-w-6xl gap-6 px-6 py-4"> */}
-          {/* <Link href="/dashboard/admin/classes" className="text-sm font-medium text-[#9A9CA6] hover:text-[#FF5B3C]">
-            Manage Classes
-          </Link>
-          <Link href="/dashboard/admin/users" className="text-sm font-medium text-[#9A9CA6] hover:text-[#FF5B3C]">
-            Manage Users
-          </Link>
-          <Link href="/dashboard/admin/trainer-applications" className="text-sm font-medium text-[#9A9CA6] hover:text-[#FF5B3C]">
-            Trainer Applications
-          </Link> */}
-        {/* </div> */}
+       
       </div>
       <div className="mx-auto max-w-6xl px-6 py-8">{children}</div>
     </div>

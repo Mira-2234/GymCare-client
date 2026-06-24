@@ -1,10 +1,6 @@
 "use client";
 
-/**
- * src/app/dashboard/add-post/page.js
- * Trainer ও Admin উভয়ের জন্যই এই একটা component কাজ করবে।
- * authorRole user.role থেকে স্বয়ংক্রিয়ভাবে নেওয়া হচ্ছে।
- */
+
 
 import { useState } from "react";
 import { useAuth } from "@/lib/useAuth";

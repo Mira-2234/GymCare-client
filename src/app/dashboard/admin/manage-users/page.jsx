@@ -179,10 +179,10 @@ export default function ManageUsersPage() {
                       </span>
                     </td>
 
-                    {/* Actions */}
+                    
                     <td className="px-5 py-4">
                       <div className="flex flex-wrap gap-2">
-                        {/* Block / Unblock — admin nijer nij ke block korte parbe na */}
+                        
                         {!isCurrentAdmin && (
                           <button
                             onClick={() => handleStatusToggle(u._id, status, u.name)}
@@ -196,7 +196,7 @@ export default function ManageUsersPage() {
                           </button>
                         )}
 
-                        {/* Make Admin — shudhu user role er jonno, admin/trainer na */}
+                       
                         {u.role === "user" && !isCurrentAdmin && (
                           <button
                             onClick={() => handleRoleChange(u._id, "admin", u.name)}

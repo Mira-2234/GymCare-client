@@ -11,7 +11,6 @@ const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
 export default function AddClassPage() {
   const { user } = useAuth();
 
-  // FIX 1: imageFile state declare করা হয়নি আগে
   const [imageFile,  setImageFile]  = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
   const [uploading,  setUploading]  = useState(false);
@@ -46,7 +45,7 @@ export default function AddClassPage() {
       toast.error("Please fill in all fields.");
       return;
     }
-    // FIX 2: imageFile check করছি, form.image না
+    
     if (!imageFile) {
       toast.error("Please upload a class image.");
       return;
@@ -54,7 +53,7 @@ export default function AddClassPage() {
 
     setSubmitting(true);
 
-    // FIX 3: Cloudinary-তে আগে upload করো, তারপর URL নিয়ে submit করো
+    
     let imageUrl = "";
     try {
       setUploading(true);
@@ -73,7 +72,7 @@ export default function AddClassPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          image: imageUrl, // Cloudinary থেকে পাওয়া URL
+          image: imageUrl, 
           trainerName:  user.name,
           trainerEmail: user.email,
         }),
@@ -157,7 +156,7 @@ export default function AddClassPage() {
           )}
         </div>
 
-        {/* Category + Difficulty */}
+        
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-[#9A9CA6]">Category</label>
@@ -181,7 +180,7 @@ export default function AddClassPage() {
           </div>
         </div>
 
-        {/* Duration + Price */}
+        
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col gap-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-[#9A9CA6]">Duration</label>

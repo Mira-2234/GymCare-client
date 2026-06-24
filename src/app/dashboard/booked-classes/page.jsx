@@ -68,7 +68,7 @@ export default function BookedClassesPage() {
             </thead>
             <tbody>
               {bookings.map((b) => {
-                // অবজেক্ট বা স্ট্রিং চেক করে শিডিউল ফরম্যাট করা হচ্ছে
+                
                 let displaySchedule = "—";
                 if (typeof b.schedule === "string") {
                   displaySchedule = b.schedule;

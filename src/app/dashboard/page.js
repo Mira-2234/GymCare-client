@@ -68,7 +68,7 @@ function ApplicationStatusBadge({ status }) {
   );
 }
 
-// 🔴 সাধারণ error banner — সমস্যা হলে UI তেই দেখাবে, silent fail হবে না
+
 function ErrorBanner({ message }) {
   if (!message) return null;
   return (
@@ -78,7 +78,6 @@ function ErrorBanner({ message }) {
   );
 }
 
-// ─── User Overview ─────────────────────────────────────────────────────────
 function UserOverview({ user }) {
   const [stats, setStats] = useState({ bookedCount: 0, favoritesCount: 0 });
   const [application, setApplication] = useState(null);
@@ -115,7 +114,7 @@ function UserOverview({ user }) {
       })
       .catch((err) => {
         if (err.name === "AbortError") return;
-        console.error("UserOverview fetch error:", err); // 🔴 console এ দেখা যাবে
+        console.error("UserOverview fetch error:", err); 
         setError(err.message);
         setLoading(false);
       });
@@ -155,7 +154,6 @@ function UserOverview({ user }) {
   );
 }
 
-// ─── Admin Overview ──────────────────────────────────────────────────────
 function AdminOverview({ user }) {
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -166,7 +164,7 @@ function AdminOverview({ user }) {
     usersByRole: [],
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // 🔴
+  const [error, setError] = useState(null); 
 
   useEffect(() => {
     if (!user?.email) return;
@@ -189,7 +187,7 @@ function AdminOverview({ user }) {
       })
       .catch((err) => {
         if (err.name === "AbortError") return;
-        console.error("AdminOverview fetch error:", err); // 🔴
+        console.error("AdminOverview fetch error:", err); 
         setError(err.message);
         setLoading(false);
       });
@@ -288,7 +286,7 @@ function AdminOverview({ user }) {
   );
 }
 
-// ─── Trainer Overview ─────────────────────────────────────────────────────
+
 function TrainerOverview({ user }) {
   const [stats, setStats] = useState({ totalClasses: 0, totalStudents: 0 });
   const [loading, setLoading] = useState(true);
@@ -345,7 +343,6 @@ function TrainerOverview({ user }) {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────
 export default function DashboardOverviewPage() {
   const { user, loading: authLoading } = useAuth();
   const role = user?.role || "user";

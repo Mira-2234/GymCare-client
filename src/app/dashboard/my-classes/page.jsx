@@ -13,7 +13,6 @@ const STATUS_STYLES = {
   Rejected: "bg-red-500/15 text-red-400",
 };
 
-// ── Update Modal ──────────────────────────────────────────────────────────
 function UpdateModal({ cls, onClose, onUpdated }) {
   const { user } = useAuth();
   const [form, setForm] = useState({ ...cls });
@@ -188,7 +187,7 @@ function UpdateModal({ cls, onClose, onUpdated }) {
   );
 }
 
-// ── View Students Modal ─────────────────────────────────────────────────
+
 function StudentsModal({ classId, className, onClose }) {
   const [attendees, setAttendees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -245,7 +244,7 @@ function StudentsModal({ classId, className, onClose }) {
   );
 }
 
-// ── Main Page ───────────────────────────────────────────────────────────
+
 export default function MyClassesPage() {
   const { user } = useAuth();
   const [classes, setClasses] = useState([]);

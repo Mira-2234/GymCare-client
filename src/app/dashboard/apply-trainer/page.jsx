@@ -156,7 +156,7 @@ export default function ApplyTrainerPage() {
             />
           </div>
 
-          {/* Specialty — dropdown */}
+        
           <div className="flex flex-col gap-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-[#9A9CA6]">
               Specialty
@@ -178,7 +178,6 @@ export default function ApplyTrainerPage() {
             </select>
           </div>
 
-          {/* Bio / Description */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-semibold uppercase tracking-wide text-[#9A9CA6]">
               Bio / Description

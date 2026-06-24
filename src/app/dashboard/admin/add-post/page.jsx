@@ -124,7 +124,7 @@ export default function AdminAddForumPostPage() {
           />
         </div>
 
-        {/* IMAGE UPLOAD — ADMIN STYLE (UPDATED ONLY THIS PART) */}
+       
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-semibold text-[#9A9CA6]">
             Upload Image

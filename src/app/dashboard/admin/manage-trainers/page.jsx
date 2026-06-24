@@ -22,7 +22,7 @@ export default function ManageTrainersPage() {
   const [loading, setLoading] = useState(true);
   const [demotingId, setDemotingId] = useState(null);
 
-  // Custom Modal State
+  
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     trainerId: null,
@@ -44,7 +44,6 @@ export default function ManageTrainersPage() {
       .finally(() => setLoading(false));
   }, [session]);
 
-  // Triggers when the user clicks "Demote to User"
   const initiateDemote = (trainerId, trainerName) => {
     setConfirmModal({
       isOpen: true,
@@ -53,11 +52,11 @@ export default function ManageTrainersPage() {
     });
   };
 
-  // Triggers when the user clicks "Confirm" in the custom modal
+  
   const handleDemote = async () => {
     const { trainerId, trainerName } = confirmModal;
     
-    // Close modal immediately
+
     setConfirmModal({ isOpen: false, trainerId: null, trainerName: "" });
     setDemotingId(trainerId);
 
@@ -80,7 +79,7 @@ export default function ManageTrainersPage() {
   return (
     <div className="relative">
       
-      {/* ─── Custom Dark Confirmation Modal (Matches image_263f03.png) ─── */}
+      
       <AnimatePresence>
         {confirmModal.isOpen && (
           <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 bg-black/40 backdrop-blur-sm">
